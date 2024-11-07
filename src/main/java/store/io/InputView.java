@@ -1,18 +1,20 @@
 package store.io;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import store.domain.Choice;
 import store.domain.Product;
 import store.domain.StoreHouse;
 import store.dto.Purchase;
-import store.io.file.FileBufferedReader;
-import store.io.parser.FileLineParser;
 import store.io.parser.InputParser;
+import store.io.parser.ProductsFileLineParser;
+import store.io.parser.PromotionsFileLineParser;
+import store.io.reader.FileReader;
 import store.io.reader.Reader;
 
 public class InputView {
+
+    // TODO: 검증과 형변환이 동시에 일어나는 것에 대해 고민해 보기
 
     private final Reader reader;
     private final InputValidator validator;
@@ -22,21 +24,38 @@ public class InputView {
         this.validator = validator;
     }
 
-    public void readFileInput() {
+    public void readProductsFileInput(String fileName) {
         try {
-            read();
+            readProductsFile(fileName);
         } catch (IOException e) { // TODO: 어떤 exception인지 다시 체크하기
             throw new RuntimeException(e);
         }
     }
 
-    private void read() throws IOException {
-        BufferedReader reader = new FileBufferedReader().getReader();
+    private void readProductsFile(String fileName) throws IOException {
+        Reader reader = new FileReader(fileName);
         reader.readLine();
         String line;
         while ((line = reader.readLine()) != null) {
-            Product product = new FileLineParser(line).parseLine();
+            Product product = new ProductsFileLineParser(line).parseLine();
             new StoreHouse().addProduct(product);
+        }
+    }
+
+    public void readPromotionsFileInput(String fileName) {
+        try {
+            readPromotionsFile(fileName);
+        } catch (IOException e) { // TODO: 어떤 exception인지 다시 체크하기
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void readPromotionsFile(String fileName) throws IOException {
+        Reader reader = new FileReader(fileName);
+        reader.readLine();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            new PromotionsFileLineParser(line).parseLine();
         }
     }
 
