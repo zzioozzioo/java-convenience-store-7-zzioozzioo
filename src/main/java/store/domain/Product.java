@@ -4,21 +4,29 @@ public class Product {
     private String name;
     private long price;
     private int quantity;
-    private Promotion promotionType;
+    private Promotion promotionName;
 
-    public Product(String name, long price, int quantity, Promotion promotionType) {
+    public Product(String name, long price, int quantity, Promotion promotionName) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        this.promotionType = promotionType;
+        this.promotionName = promotionName;
     }
 
     public String getName() {
         return name;
     }
 
+    public long getPrice() {
+        return price;
+    }
+
     public int getQuantity() {
         return quantity;
+    }
+
+    public Promotion getPromotionName() {
+        return promotionName;
     }
 
     public void sell(int quantity) {

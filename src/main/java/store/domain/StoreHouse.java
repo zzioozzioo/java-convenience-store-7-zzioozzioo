@@ -19,8 +19,7 @@ public class StoreHouse {
                 .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
     }
 
-    public void addProduct(String productName, long price, int quantity, Promotion promotionType) {
-        Product product = new Product(productName, price, quantity, promotionType);
+    public void addProduct(Product product) {
         productList.add(product);
     }
 }

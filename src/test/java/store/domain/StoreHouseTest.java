@@ -16,7 +16,7 @@ class StoreHouseTest {
         int quantity = 10;
 
         //when
-        storeHouse.addProduct(rameon, price, quantity, NULL);
+        storeHouse.addProduct(new Product(rameon, price, quantity, NULL));
         int amount = storeHouse.getProduct("컵라면").getQuantity();
 
         //then
@@ -31,7 +31,7 @@ class StoreHouseTest {
         String coke = "콜라";
         long price = 1_000L;
         int quantity = 10;
-        storeHouse.addProduct(coke, price, quantity, NULL);
+        storeHouse.addProduct(new Product(coke, price, quantity, NULL));
 
         int beforeStock = storeHouse.getProduct(coke).getQuantity();
 
@@ -60,7 +60,7 @@ class StoreHouseTest {
         String coke = "콜라";
         long price = 1_000L;
         int quantity = 1;
-        storeHouse.addProduct(coke, price, quantity, NULL);
+        storeHouse.addProduct(new Product(coke, price, quantity, NULL));
 
         //when & then
         Assertions.assertThatThrownBy(() -> storeHouse.buy(coke, 2))
