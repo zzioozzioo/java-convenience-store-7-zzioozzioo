@@ -1,15 +1,14 @@
 package store.io.file;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 
-public class FileReader implements Reader {
+public class FileBufferedReader implements BufferedReader {
 
     @Override
-    public BufferedReader getReader() {
+    public java.io.BufferedReader getReader() {
         try {
             java.io.FileReader fileReader = new java.io.FileReader("src/main/resources/products.md");
-            return new BufferedReader(fileReader);
+            return new java.io.BufferedReader(fileReader);
         } catch (FileNotFoundException e) {
             throw new RuntimeException();
         }
