@@ -7,6 +7,7 @@ import static store.domain.Promotion.SPARKLING_BUY_TWO_GET_ONE_FREE;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import store.domain.Product;
+import store.io.parser.FileLineParser;
 
 class FileLineParserTest {
 

@@ -1,4 +1,4 @@
-package store.io;
+package store.io.file;
 
 import java.io.BufferedReader;
 

@@ -1,4 +1,4 @@
-package store.io;
+package store.io.parser;
 
 import store.domain.Product;
 import store.domain.Promotion;
@@ -17,6 +17,7 @@ public class FileLineParser {
     }
 
     private Product getProduct(String[] product) {
+        // TODO: 더 효율적인 로직 고민해 보기
         return new Product(product[0],
                 convertPrice(product[1]),
                 convertQuantity(product[2]),
