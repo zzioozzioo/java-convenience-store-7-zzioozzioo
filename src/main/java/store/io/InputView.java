@@ -1,10 +1,12 @@
 package store.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import store.domain.Choice;
 import store.domain.Product;
 import store.domain.StoreHouse;
+import store.dto.PromotionInfo;
 import store.dto.Purchase;
 import store.io.parser.InputParser;
 import store.io.parser.ProductsFileLineParser;
@@ -42,21 +44,23 @@ public class InputView {
         }
     }
 
-    public void readPromotionsFileInput(String fileName) {
+    public List<PromotionInfo> readPromotionsFileInput(String fileName) {
         try {
-            readPromotionsFile(fileName);
+            return readPromotionsFile(fileName);
         } catch (IOException e) { // TODO: 어떤 exception인지 다시 체크하기
             throw new RuntimeException(e);
         }
     }
 
-    private void readPromotionsFile(String fileName) throws IOException {
+    private List<PromotionInfo> readPromotionsFile(String fileName) throws IOException {
         Reader reader = new FileReader(fileName);
         reader.readLine();
         String line;
+        List<PromotionInfo> promotionInfos = new ArrayList<>();
         while ((line = reader.readLine()) != null) {
-            new PromotionsFileLineParser(line).parseLine();
+            promotionInfos.add(new PromotionsFileLineParser(line).parseLine());
         }
+        return promotionInfos;
     }
 
     public List<Purchase> readProductNameAndQuantity() {

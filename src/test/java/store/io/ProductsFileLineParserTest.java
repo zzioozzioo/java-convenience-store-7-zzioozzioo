@@ -7,9 +7,9 @@ import static store.domain.Promotion.SPARKLING_BUY_TWO_GET_ONE_FREE;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import store.domain.Product;
-import store.io.parser.FileLineParser;
+import store.io.parser.ProductsFileLineParser;
 
-class FileLineParserTest {
+class ProductsFileLineParserTest {
 
     // TODO: 파일에서 잘못된 형식이 존재하는 경우도 테스트에 추가하기
 
@@ -17,10 +17,10 @@ class FileLineParserTest {
     void 파일_한_줄에서_상품_객체_가져오기() {
         //given
         String line = "콜라,1000,10,탄산2+1";
-        FileLineParser fileLineParser = new FileLineParser(line);
+        ProductsFileLineParser productsFileLineParser = new ProductsFileLineParser(line);
 
         //when
-        Product product = fileLineParser.parseLine();
+        Product product = productsFileLineParser.parseLine();
 
         //then
         Assertions.assertThat(product.getName()).isEqualTo("콜라");
@@ -33,10 +33,10 @@ class FileLineParserTest {
     void 상품에서_프로모션_이름이_null인_경우() {
         //given
         String line = "비타민워터,1500,6,null";
-        FileLineParser fileLineParser = new FileLineParser(line);
+        ProductsFileLineParser productsFileLineParser = new ProductsFileLineParser(line);
 
         //when
-        Product product = fileLineParser.parseLine();
+        Product product = productsFileLineParser.parseLine();
 
         //then
         Assertions.assertThat(product.getName()).isEqualTo("비타민워터");

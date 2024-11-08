@@ -3,11 +3,11 @@ package store.io.parser;
 import store.domain.Product;
 import store.domain.Promotion;
 
-public class FileLineParser {
+public class ProductsFileLineParser {
 
     private final String line;
 
-    public FileLineParser(String line) {
+    public ProductsFileLineParser(String line) {
         this.line = line;
     }
 

@@ -14,11 +14,9 @@ import store.testutil.ReaderFake;
 
 public class InputViewTest {
 
-    private static ByteArrayOutputStream outputMessage;
-
     @BeforeEach
     void setUpStreams() {
-        outputMessage = new ByteArrayOutputStream();
+        ByteArrayOutputStream outputMessage = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputMessage));
     }
 
@@ -29,15 +27,30 @@ public class InputViewTest {
 
 
     @Test
-    void 파일_입력_기능_테스트() {
+    void 상품_파일_입력_기능_테스트() {
         //given
         ReaderFake readerFake = new ReaderFake();
         InputView inputView = new InputView(readerFake, new InputValidator());
+        String fileName = "src/main/resources/products.md";
 
         //when & then
-        Assertions.assertThatCode(inputView::readFileInput)
+        Assertions.assertThatCode(() -> inputView.readProductsFileInput(fileName))
                 .doesNotThrowAnyException();
     }
+
+    @Test
+    void 프로모션_파일_입력_기능_테스트() {
+        //given
+        ReaderFake readerFake = new ReaderFake();
+        InputView inputView = new InputView(readerFake, new InputValidator());
+        String fileName = "src/main/resources/promotions.md";
+
+        //when & then
+        Assertions.assertThatCode(() -> inputView.readPromotionsFileInput(fileName))
+                .doesNotThrowAnyException();
+    }
+
+    // TODO: Promotion 파일 테스트도 추가하기
 
     @Test
     void 상품명과_수량_입력_기능_테스트() {
