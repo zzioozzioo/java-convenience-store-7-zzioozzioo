@@ -19,13 +19,13 @@ public enum Promotion {
         this.promotionName = promotionName;
     }
 
-    public static void setQuantity(Promotion promotionName, int buyQuantity, int getQuantity) {
+    static void setQuantity(Promotion promotionName, int buyQuantity, int getQuantity) {
         promotionName.buyQuantity = buyQuantity;
         promotionName.getQuantity = getQuantity;
     }
 
-    public static void setPromotionPeriods(Promotion promotionName, LocalDateTime startDateTime,
-                                           LocalDateTime endDateTime) {
+    static void setPromotionPeriods(Promotion promotionName, LocalDateTime startDateTime,
+                                    LocalDateTime endDateTime) {
         promotionName.startDateTime = startDateTime;
         promotionName.endDateTime = endDateTime;
     }
