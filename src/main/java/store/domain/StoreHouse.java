@@ -7,12 +7,12 @@ public class StoreHouse {
 
     private final List<Product> productList = new ArrayList<>();
 
-    public void buy(String productName, int quantity) {
-        Product targetProduct = getProduct(productName);
+    public void buy(Product product, int quantity) {
+        Product targetProduct = findProduct(product.getName());
         targetProduct.sell(quantity);
     }
 
-    public Product getProduct(String productName) {
+    public Product findProduct(String productName) {
         // TODO: 상품명 동일한 것 다 가져오되, 프로모션인지 아닌지 구분할 수 있는 로직 추가하기
 
         return productList.stream()

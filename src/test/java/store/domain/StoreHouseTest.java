@@ -17,7 +17,7 @@ class StoreHouseTest {
 
         //when
         storeHouse.addProduct(new Product(rameon, price, quantity, NULL));
-        int amount = storeHouse.getProduct("컵라면").getQuantity();
+        int amount = storeHouse.findProduct("컵라면").getQuantity();
 
         //then
         Assertions.assertThat(amount).isEqualTo(10);
@@ -28,18 +28,16 @@ class StoreHouseTest {
         //given
         StoreHouse storeHouse = new StoreHouse();
 
-        String coke = "콜라";
-        long price = 1_000L;
-        int quantity = 10;
-        storeHouse.addProduct(new Product(coke, price, quantity, NULL));
+        Product product = getProduct();
+        storeHouse.addProduct(product);
 
-        int beforeStock = storeHouse.getProduct(coke).getQuantity();
+        int beforeStock = storeHouse.findProduct(product.getName()).getQuantity();
 
         //when
-        storeHouse.buy(coke, 1);
+        storeHouse.buy(product, 1);
 
         //then
-        int afterStock = storeHouse.getProduct(coke).getQuantity();
+        int afterStock = storeHouse.findProduct(product.getName()).getQuantity();
         Assertions.assertThat(afterStock).isEqualTo(beforeStock - 1);
     }
 
@@ -47,9 +45,10 @@ class StoreHouseTest {
     void 창고에_없는_물품을_구매하면_예외가_발생한다() {
         //given
         StoreHouse storeHouse = new StoreHouse();
+        Product product = getProduct();
 
         //when & then
-        Assertions.assertThatThrownBy(() -> storeHouse.buy("라면", 2))
+        Assertions.assertThatThrownBy(() -> storeHouse.buy(product, 2))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -57,14 +56,19 @@ class StoreHouseTest {
     void 재고가_부족한_경우_예외가_발생한다() {
         //given
         StoreHouse storeHouse = new StoreHouse();
-        String coke = "콜라";
-        long price = 1_000L;
-        int quantity = 1;
-        storeHouse.addProduct(new Product(coke, price, quantity, NULL));
+        Product product = getProduct();
+        storeHouse.addProduct(product);
 
         //when & then
-        Assertions.assertThatThrownBy(() -> storeHouse.buy(coke, 2))
+        Assertions.assertThatThrownBy(() -> storeHouse.buy(product, 12))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private Product getProduct() {
+        String coke = "콜라";
+        long price = 1_000L;
+        int quantity = 10;
+        return new Product(coke, price, quantity, NULL);
     }
 
 }
