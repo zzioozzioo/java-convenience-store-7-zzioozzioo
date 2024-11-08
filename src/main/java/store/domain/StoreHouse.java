@@ -13,6 +13,8 @@ public class StoreHouse {
     }
 
     public Product getProduct(String productName) {
+        // TODO: 상품명 동일한 것 다 가져오되, 프로모션인지 아닌지 구분할 수 있는 로직 추가하기
+
         return productList.stream()
                 .filter(product -> product.getName().equals(productName))
                 .findFirst()
@@ -21,6 +23,10 @@ public class StoreHouse {
 
     public void addProduct(Product product) {
         productList.add(product);
+    }
+
+    List<Product> getProductList() {
+        return productList;
     }
 }
 
