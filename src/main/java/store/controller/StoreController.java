@@ -2,6 +2,7 @@ package store.controller;
 
 import java.util.List;
 import store.config.IoConfig;
+import store.config.ServiceConfig;
 import store.domain.Choice;
 import store.domain.MembershipManager;
 import store.domain.Product;
@@ -21,12 +22,12 @@ public class StoreController {
 
     private final InputView inputView;
     private final OutputView outputView;
-    private final StoreService storeService;
+    private final StoreService service;
 
-    public StoreController(IoConfig config, StoreService storeService) {
-        this.inputView = config.getInputView();
-        this.outputView = config.getOutputView();
-        this.storeService = storeService;
+    public StoreController(IoConfig ioConfig, ServiceConfig serviceConfig) {
+        this.inputView = ioConfig.getInputView();
+        this.outputView = ioConfig.getOutputView();
+        this.service = serviceConfig.getService();
     }
 
     public void run() {
@@ -73,7 +74,7 @@ public class StoreController {
         while (true) {
             try {
                 List<Purchase> purchaseList = inputView.readProductNameAndQuantity();
-                storeService.purchase(purchaseList, storeHouse);
+                service.purchase(purchaseList, storeHouse);
                 return purchaseList;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());

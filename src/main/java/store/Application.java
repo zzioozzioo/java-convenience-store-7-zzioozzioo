@@ -2,8 +2,8 @@ package store;
 
 import store.config.Config;
 import store.config.IoConfig;
+import store.config.ServiceConfig;
 import store.controller.StoreController;
-import store.service.StoreService;
 
 public class Application {
     public static void main(String[] args) {
@@ -11,7 +11,7 @@ public class Application {
 
         StoreController controller = new StoreController(
                 new IoConfig(new Config()),
-                new StoreService()
+                new ServiceConfig(new Config())
         );
 
         controller.run();
