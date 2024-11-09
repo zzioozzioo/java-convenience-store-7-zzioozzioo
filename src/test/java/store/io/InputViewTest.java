@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import store.domain.Choice;
 import store.testutil.ReaderFake;
+import store.testutil.WriterFake;
 
 public class InputViewTest {
 
@@ -30,7 +31,8 @@ public class InputViewTest {
     void 상품_파일_입력_기능_테스트() {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
         String fileName = "src/main/resources/products.md";
 
         //when & then
@@ -42,7 +44,8 @@ public class InputViewTest {
     void 프로모션_파일_입력_기능_테스트() {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
         String fileName = "src/main/resources/promotions.md";
 
         //when & then
@@ -56,7 +59,8 @@ public class InputViewTest {
     void 상품명과_수량_입력_기능_테스트() {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         readerFake.setInput("[사이다-2],[감자칩-1]");
 
@@ -71,7 +75,8 @@ public class InputViewTest {
     void 증정품_추가_여부_입력_기능_테스트(String input, Choice result) {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         String productName = "콜라";
         readerFake.setInput(input);
@@ -88,7 +93,8 @@ public class InputViewTest {
     void 증정품_추가_여부_입력_예외_테스트(String input) {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         String productName = "콜라";
         readerFake.setInput(input);
@@ -103,7 +109,8 @@ public class InputViewTest {
     void 프로모션_재고_부족_시_정가_구매_여부_입력_기능_테스트(String input, Choice result) {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         String productName = "콜라";
         int quantity = 10;
@@ -121,7 +128,8 @@ public class InputViewTest {
     void 프로모션_재고_부족_시_정가_구매_여부_입력_예외_테스트(String input) {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         String productName = "콜라";
         int quantity = 10;
@@ -137,7 +145,8 @@ public class InputViewTest {
     void 멤버십_할인_적용_여부_입력_기능_테스트(String input, Choice result) {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         readerFake.setInput(input);
 
@@ -153,7 +162,8 @@ public class InputViewTest {
     void 멤버십_할인_적용_여부_입력_예외_테스트(String input) {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         readerFake.setInput(input);
 
@@ -167,7 +177,8 @@ public class InputViewTest {
     void 추가_구메_여부_입력_기능_테스트(String input, Choice result) {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         readerFake.setInput(input);
 
@@ -183,7 +194,8 @@ public class InputViewTest {
     void 추가_구메_여부_입력_예외_테스트(String input) {
         //given
         ReaderFake readerFake = new ReaderFake();
-        InputView inputView = new InputView(readerFake, new InputValidator());
+        WriterFake writerFake = new WriterFake();
+        InputView inputView = new InputView(readerFake, writerFake, new InputValidator());
 
         readerFake.setInput(input);
 
