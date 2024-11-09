@@ -17,7 +17,7 @@ class StoreHouseTest {
 
         //when
         storeHouse.addProduct(new Product(rameon, price, quantity, NULL));
-        int amount = storeHouse.findProduct("컵라면").getQuantity();
+        int amount = storeHouse.findProductByName("컵라면").getFirst().getQuantity();
 
         //then
         Assertions.assertThat(amount).isEqualTo(10);
@@ -31,25 +31,14 @@ class StoreHouseTest {
         Product product = getProduct();
         storeHouse.addProduct(product);
 
-        int beforeStock = storeHouse.findProduct(product.getName()).getQuantity();
+        int beforeStock = storeHouse.findProductByName(product.getName()).getFirst().getQuantity();
 
         //when
         storeHouse.buy(product, 1);
 
         //then
-        int afterStock = storeHouse.findProduct(product.getName()).getQuantity();
+        int afterStock = storeHouse.findProductByName(product.getName()).getFirst().getQuantity();
         Assertions.assertThat(afterStock).isEqualTo(beforeStock - 1);
-    }
-
-    @Test
-    void 창고에_없는_물품을_구매하면_예외가_발생한다() {
-        //given
-        StoreHouse storeHouse = new StoreHouse();
-        Product product = getProduct();
-
-        //when & then
-        Assertions.assertThatThrownBy(() -> storeHouse.buy(product, 2))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

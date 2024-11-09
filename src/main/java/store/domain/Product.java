@@ -1,10 +1,12 @@
 package store.domain;
 
+import store.exception.OutOfStockQuantityException;
+
 public class Product {
-    private String name;
-    private long price;
+    private final String name;
+    private final long price;
     private int quantity;
-    private Promotion promotionName;
+    private final Promotion promotionName;
 
     public Product(String name, long price, int quantity, Promotion promotionName) {
         this.name = name;
@@ -31,7 +33,7 @@ public class Product {
 
     public void sell(int quantity) {
         if (quantity > this.quantity) {
-            throw new IllegalArgumentException("상품의 재고가 부족합니다.");
+            throw new OutOfStockQuantityException();
         }
         this.quantity -= quantity;
     }

@@ -1,6 +1,7 @@
 package store.io.parser;
 
 import java.util.List;
+import store.domain.Product;
 import store.domain.StoreHouse;
 import store.dto.Purchase;
 
@@ -25,7 +26,8 @@ public class ReceiptParser {
         for (Purchase purchase : purchaseList) {
             String productName = purchase.getProductName();
             int quantity = purchase.getQuantity();
-            long price = storeHouse.findProduct(productName).getPrice();
+            List<Product> products = storeHouse.findProductByName(productName);
+            long price = products.getFirst().getPrice();
 
             sb.append(productName).append("\t\t").append(quantity).append("\t")
                     .append(String.format("%,d", price * quantity)).append("\n");
