@@ -1,5 +1,8 @@
 package store.io.parser;
 
+import static store.constants.ErrorMessages.NONNUMERICAL_QUANTITY;
+import static store.constants.StringConstants.COMMA;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +21,7 @@ public class PromotionsFileLineParser {
 
     // TODO: PromotionInfo 값 세팅을 여기서 해도 될지 고민해 보기 (밖으로 내보내서 해야 하나?)
     public PromotionInfo parseLine() {
-        List<String> parts = Arrays.asList(line.split(","));
+        List<String> parts = Arrays.asList(line.split(COMMA));
         Promotion promotionName = getPromotion(parts);
         int buyQuantity = getValidQuantity(parts.get(1));
         int getQuantity = getValidQuantity(parts.get(2));
@@ -45,7 +48,7 @@ public class PromotionsFileLineParser {
         try {
             quantity = Integer.parseInt(inputQuantity);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("숫자가 아닙니다.");
+            throw new IllegalArgumentException(NONNUMERICAL_QUANTITY);
         }
         return quantity;
     }

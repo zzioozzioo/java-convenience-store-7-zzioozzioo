@@ -1,5 +1,7 @@
 package store.io.parser;
 
+import static store.constants.StringConstants.COMMA;
+
 import store.domain.Product;
 import store.domain.Promotion;
 
@@ -12,7 +14,7 @@ public class ProductsFileLineParser {
     }
 
     public Product parseLine() {
-        String[] product = line.split(",");
+        String[] product = line.split(COMMA);
         return getProduct(product);
     }
 

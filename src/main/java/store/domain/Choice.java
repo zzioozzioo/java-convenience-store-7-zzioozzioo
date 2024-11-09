@@ -1,5 +1,7 @@
 package store.domain;
 
+import static store.constants.ErrorMessages.YES_OR_NO;
+
 public enum Choice {
     Y("Y"),
     N("N");
@@ -16,9 +18,9 @@ public enum Choice {
                 return choice;
             }
         }
-        throw new IllegalArgumentException("Y와 N 중에 입력해야 합니다.");
+        throw new IllegalArgumentException(YES_OR_NO);
     }
-    
+
     public String getValue() {
         return value;
     }

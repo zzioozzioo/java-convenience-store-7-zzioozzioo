@@ -1,9 +1,11 @@
 package store.io;
 
+import static store.constants.ErrorMessages.EMPTY_INPUT;
+
 public class InputValidator {
-    public void validateNonEmptyInput(String input) {
+    public void validateEmptyInput(String input) {
         if (input == null || input.trim().isEmpty()) {
-            throw new IllegalArgumentException("값을 입력해야 합니다.");
+            throw new IllegalArgumentException(EMPTY_INPUT);
         }
     }
 }

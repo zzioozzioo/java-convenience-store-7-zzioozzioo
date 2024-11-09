@@ -1,5 +1,15 @@
 package store.io.parser;
 
+import static store.constants.ErrorMessages.EMPTY_PRODUCT;
+import static store.constants.ErrorMessages.EMPTY_PRODUCT_NAME;
+import static store.constants.ErrorMessages.INVALID_INPUT_FORMAT;
+import static store.constants.ErrorMessages.INVALID_PRODUCT_BRACKETS;
+import static store.constants.ErrorMessages.NONNUMERICAL_QUANTITY;
+import static store.constants.StringConstants.CLOSE_SQUARE_BRACKETS;
+import static store.constants.StringConstants.COMMA;
+import static store.constants.StringConstants.DASH;
+import static store.constants.StringConstants.OPEN_SQUARE_BRACKETS;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,14 +27,14 @@ public class InputParser {
     }
 
     private List<String> splitEachProduct(String input) {
-        List<String> products = Arrays.asList(input.split(",", -1));
+        List<String> products = Arrays.asList(input.split(COMMA, -1));
         validateEmptyProduct(products);
         return products;
     }
 
     private void validateEmptyProduct(List<String> products) {
         if (products.contains("")) {
-            throw new IllegalArgumentException("상품 구분자를 잘못 입력했습니다.");
+            throw new IllegalArgumentException(EMPTY_PRODUCT);
         }
     }
 
@@ -32,7 +42,7 @@ public class InputParser {
         validateProductBrackets(product);
 
         String productAndQuantity = product.substring(1, product.length() - 1);
-        String[] parts = productAndQuantity.split("-");
+        String[] parts = productAndQuantity.split(DASH);
 
         validateHyphenSeparatedFormat(parts);
 
@@ -40,15 +50,15 @@ public class InputParser {
     }
 
     private void validateProductBrackets(String product) {
-        if (!(product.startsWith("[") && product.endsWith("]"))) {
-            throw new IllegalArgumentException("개별 상품은 대괄호로 묶어야 합니다.");
+        if (!(product.startsWith(OPEN_SQUARE_BRACKETS) && product.endsWith(CLOSE_SQUARE_BRACKETS))) {
+            throw new IllegalArgumentException(INVALID_PRODUCT_BRACKETS);
         }
     }
 
     private void validateHyphenSeparatedFormat(String[] parts) {
         // TODO: 에러 메시지 구체적으로 출력되도록 보완하기
         if (parts.length != 2) {
-            throw new IllegalArgumentException("잘못된 입력 형식입니다.");
+            throw new IllegalArgumentException(INVALID_INPUT_FORMAT);
         }
     }
 
@@ -61,7 +71,7 @@ public class InputParser {
 
     private void validateEmptyProductName(String productName) {
         if (productName.isEmpty()) {
-            throw new IllegalArgumentException("상품명을 입력해야 합니다.");
+            throw new IllegalArgumentException(EMPTY_PRODUCT_NAME);
         }
     }
 
@@ -70,7 +80,7 @@ public class InputParser {
         try {
             quantity = Integer.parseInt(inputQuantity);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("수량은 숫자로 입력해야 합니다.");
+            throw new IllegalArgumentException(NONNUMERICAL_QUANTITY);
         }
         return quantity;
     }

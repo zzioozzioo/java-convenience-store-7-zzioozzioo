@@ -1,9 +1,10 @@
 package store.exception;
 
+import static store.constants.ErrorMessages.OUT_OF_STOCK_QUANTITY;
+
 public class OutOfStockQuantityException extends IllegalArgumentException {
-    private static final String ERROR_MESSAGE = "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.";
 
     public OutOfStockQuantityException() {
-        super(ERROR_MESSAGE);
+        super(OUT_OF_STOCK_QUANTITY);
     }
 }

@@ -1,5 +1,7 @@
 package store.io.reader;
 
+import static store.constants.ErrorMessages.FILE_INPUT;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,7 +23,7 @@ public class FileReader implements Reader {
         try {
             return reader.readLine();
         } catch (IOException e) {
-            throw new RuntimeException("파일 읽기 오류");
+            throw new RuntimeException(FILE_INPUT);
         }
     }
 }

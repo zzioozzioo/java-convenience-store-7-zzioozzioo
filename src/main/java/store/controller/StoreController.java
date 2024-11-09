@@ -1,8 +1,10 @@
 package store.controller;
 
+import static store.constants.InputMessages.PRODUCTS_FILE_NAME;
+import static store.constants.InputMessages.PROMOTIONS_FILE_NAME;
+
 import java.util.List;
 import store.config.IoConfig;
-import store.config.ServiceConfig;
 import store.domain.Choice;
 import store.domain.MembershipManager;
 import store.domain.Product;
@@ -17,17 +19,14 @@ import store.service.StoreService;
 
 public class StoreController {
 
-    final static String PRODUCTS_FILE_NAME = "src/main/resources/products.md";
-    final static String PROMOTIONS_FILE_NAME = "src/main/resources/promotions.md";
 
     private final InputView inputView;
     private final OutputView outputView;
-    private final StoreService service;
+    private StoreService service;
 
-    public StoreController(IoConfig ioConfig, ServiceConfig serviceConfig) {
+    public StoreController(IoConfig ioConfig) {
         this.inputView = ioConfig.getInputView();
         this.outputView = ioConfig.getOutputView();
-        this.service = serviceConfig.getService();
     }
 
     public void run() {
