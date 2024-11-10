@@ -1,5 +1,7 @@
 package store.domain;
 
+import static camp.nextstep.edu.missionutils.DateTimes.now;
+
 import java.time.LocalDateTime;
 
 public enum Promotion {
@@ -31,7 +33,7 @@ public enum Promotion {
     }
 
     public static boolean isPromotionValid(Promotion promotionName) {
-        LocalDateTime now = camp.nextstep.edu.missionutils.DateTimes.now();
+        LocalDateTime now = now();
         return !now.isBefore(promotionName.startDateTime) && !now.isAfter(promotionName.endDateTime);
     }
 
