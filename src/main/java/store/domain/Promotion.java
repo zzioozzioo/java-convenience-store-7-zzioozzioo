@@ -30,7 +30,8 @@ public enum Promotion {
         promotionName.endDateTime = endDateTime;
     }
 
-    public static boolean isPromotionValid(Promotion promotionName, LocalDateTime now) {
+    public static boolean isPromotionValid(Promotion promotionName) {
+        LocalDateTime now = camp.nextstep.edu.missionutils.DateTimes.now();
         return !now.isBefore(promotionName.startDateTime) && !now.isAfter(promotionName.endDateTime);
     }
 
