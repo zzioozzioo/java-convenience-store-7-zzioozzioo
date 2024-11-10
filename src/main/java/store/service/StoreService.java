@@ -11,6 +11,7 @@ import store.domain.PromotionManager;
 import store.domain.StoreHouse;
 import store.dto.Purchase;
 import store.dto.Receipt;
+import store.exception.OutOfStockQuantityException;
 
 public class StoreService {
 
@@ -46,8 +47,12 @@ public class StoreService {
     private static void validateStock(StoreHouse storeHouse, Purchase purchase) {
         String productName = purchase.getProductName();
         List<Product> products = storeHouse.findProductByName(productName);
+        int sum = 0;
         for (Product product : products) {
-            storeHouse.checkValidStock(product, purchase.getQuantity());
+            sum += product.getQuantity();
+        }
+        if (sum < purchase.getQuantity()) {
+            throw new OutOfStockQuantityException();
         }
     }
 
@@ -71,9 +76,8 @@ public class StoreService {
     public void applyMembershipDiscount(Receipt receipt) {
         Map<Product, Integer> freebieProduct = receipt.getFreebieProduct();
         List<Purchase> purchaseList = receipt.getPurchaseList();
-        for (Purchase purchase : purchaseList) {
-            membershipManager.applyDiscount(freebieProduct, purchase);
-        }
+        membershipManager.applyDiscount(freebieProduct, purchaseList);
+        membershipManager.calculateDiscountAmount();
         membershipManager.validateDiscountAmount(purchaseList);
     }
 

@@ -14,23 +14,48 @@ public class MembershipManager {
         this.storeHouse = storeHouse;
     }
 
-    public void applyDiscount(Map<Product, Integer> freebieProduct, Purchase purchase) {
+    public void applyDiscount(Map<Product, Integer> freebieProduct, List<Purchase> purchaseList) {
+        if (freebieProduct.isEmpty()) {
+            getRegularPriceAmount(purchaseList);
+            return;
+        }
+        getRegularPriceAmountWhenHasFreebieProduct(freebieProduct, purchaseList);
+    }
+
+    private void getRegularPriceAmount(List<Purchase> purchaseList) {
+        for (Purchase purchase : purchaseList) {
+            calculateRegularPriceAmount(purchase);
+        }
+    }
+
+    private void calculateRegularPriceAmount(Purchase purchase) {
+        String productName = purchase.getProductName();
+        int quantity = purchase.getQuantity();
+        List<Product> products = storeHouse.findProductByName(productName);
+
+        if (!products.isEmpty()) {
+            long price = products.get(0).getPrice();
+            regularPriceAmount += (price * quantity);
+        }
+    }
+
+    private void getRegularPriceAmountWhenHasFreebieProduct(Map<Product, Integer> freebieProduct,
+                                                            List<Purchase> purchaseList) {
+        for (Purchase purchase : purchaseList) {
+            processNonFreebieProductPurchase(freebieProduct, purchase);
+        }
+    }
+
+    private void processNonFreebieProductPurchase(Map<Product, Integer> freebieProduct, Purchase purchase) {
         String productName = purchase.getProductName();
         for (Product product : freebieProduct.keySet()) {
-            calculateRegularPriceAmount(product, productName);
-        }
-        calculateDiscountAmount();
-    }
-
-    private void calculateRegularPriceAmount(Product product, String productName) {
-        if (!product.getName().equals(productName)) {
-            List<Product> products = storeHouse.findProductByName(productName);
-            long price = products.getFirst().getPrice();
-            regularPriceAmount += price;
+            if (!product.getName().equals(productName)) {
+                calculateRegularPriceAmount(purchase);
+            }
         }
     }
 
-    private void calculateDiscountAmount() {
+    public void calculateDiscountAmount() {
         discountAmount = (long) (regularPriceAmount * 0.3);
         if (discountAmount > 8_000L) {
             discountAmount = 8_000L;
