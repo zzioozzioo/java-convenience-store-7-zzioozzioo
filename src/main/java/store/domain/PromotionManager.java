@@ -3,6 +3,7 @@ package store.domain;
 import java.util.List;
 import store.dto.BuyGetQuantity;
 import store.dto.PromotionInfo;
+import store.dto.Receipt;
 import store.io.InputValidator;
 import store.io.InputView;
 import store.io.reader.MissionUtilsReader;
@@ -31,29 +32,29 @@ public class PromotionManager {
         });
     }
 
-
-    // TODO: 일반과 프로모션 상품이 있고 구매 수량이 프로모션의 getQuantity 이상이면
-    //  프로모션 상품으로 처리
-    //  ...아래는 프로모션 상품이 있다는 전제 하에 진행...
-    public void applyPromotion(Product product, int purchaseQuantity) {
-
+    public Receipt applyPromotion(Product product, int purchaseQuantity) {
+        Receipt receipt = new Receipt();
         if (!isValidPromotionApplicable(product, purchaseQuantity)) {
-            processRegularPricePayment(product, purchaseQuantity, 0);
+            processRegularPricePayment(product, purchaseQuantity);
+            return receipt;
         }
 
         // 프로모션 재고가 있는 경우
-        if (processFullPromotionPayment(product, purchaseQuantity)) {
-            return;
+        if (processFullPromotionPayment(receipt, product, purchaseQuantity)) {
+            return receipt;
         }
         // 프로모션 재고가 부족한 경우
-        processPartialPromotionPayment(product, purchaseQuantity);
+        processPartialPromotionPayment(receipt, product, purchaseQuantity);
+        return receipt;
     }
 
     private boolean isValidPromotionApplicable(Product product, int purchaseQuantity) {
-        return checkValidPromotion(product.getPromotionName()) && canApplyPromotion(product, purchaseQuantity);
+        return validPromotionPeriod(product.getPromotionName()) &&
+                canApplyPromotion(product, purchaseQuantity) &&
+                validPromotionProductStock(product);
     }
 
-    public boolean checkValidPromotion(Promotion promotionName) {
+    public boolean validPromotionPeriod(Promotion promotionName) {
         return Promotion.isPromotionValid(promotionName);
     }
 
@@ -63,13 +64,19 @@ public class PromotionManager {
         return purchaseQuantity >= buyQuantity;
     }
 
-    private void processRegularPricePayment(Product product, int purchaseQuantity, int promotionAppliedQuantity) {
-
-        Product generalProduct = findProductByPromotionName(product, Promotion.NULL);
-        storeHouse.buy(generalProduct, purchaseQuantity - promotionAppliedQuantity);
+    private boolean validPromotionProductStock(Product product) {
+        BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
+        int buyQuantity = buyAndGetQuantity.getBuyQuantity();
+        return buyQuantity <= product.getQuantity();
     }
 
-    private boolean processFullPromotionPayment(Product product, int purchaseQuantity) {
+    private void processRegularPricePayment(Product product, int purchaseQuantity) {
+
+        Product generalProduct = findProductByPromotionName(product, Promotion.NULL);
+        storeHouse.buy(generalProduct, purchaseQuantity);
+    }
+
+    private boolean processFullPromotionPayment(Receipt receipt, Product product, int purchaseQuantity) {
         BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
         int buyQuantity = buyAndGetQuantity.getBuyQuantity();
         int getQuantity = buyAndGetQuantity.getGetQuantity();
@@ -81,24 +88,37 @@ public class PromotionManager {
             if (remainder != 0 && remainder < buyQuantity) { // 증정품 하나 추가할 수 있는지 확인
                 Choice freebieAdditionChoice = getInputView().readFreebieAdditionChoice(product.getName());
                 int totalPurchaseQuantity = purchaseQuantity;
-                totalPurchaseQuantity = getTotalPurchaseQuantity(freebieAdditionChoice, totalPurchaseQuantity);
+                totalPurchaseQuantity = getTotalPurchaseQuantity(product, freebieAdditionChoice, totalPurchaseQuantity);
+                if (purchaseQuantity == (buyQuantity - remainder)) { // 증정품 하나를 일반 상품에서 소진
+                    processRegularPricePayment(product, 1);
+                    // TODO: 영수증에 증정 품목(Product, 개수) 추가
+                    receipt.addFreebieProduct(product, 1);
+                    return true;
+                }
                 // 프로모션 적용 후 구매하는 로직
                 storeHouse.buy(product, totalPurchaseQuantity);
+                // TODO: 영수증에 증정 품목 추가
+                receipt.addFreebieProduct(product, getPromotionAppliedQuantity(product) / (buyQuantity + getQuantity));
                 return true;
             }
         }
         return false;
     }
 
-    private static int getTotalPurchaseQuantity(Choice freebieAdditionChoice, int totalPurchaseQuantity) {
+    private static int getTotalPurchaseQuantity(Product product, Choice freebieAdditionChoice,
+                                                int totalPurchaseQuantity) {
         if (freebieAdditionChoice.equals(Choice.Y)) { // 추가하는 경우
             totalPurchaseQuantity += 1;
         }
         return totalPurchaseQuantity;
     }
 
-    private void processPartialPromotionPayment(Product product, int purchaseQuantity) {
-        int promotionAppliedQuantity = getAvailablePromotionQuantity(product); // 구매 가능 프로모션 수량
+    private void processPartialPromotionPayment(Receipt receipt, Product product, int purchaseQuantity) {
+        BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
+        int buyQuantity = buyAndGetQuantity.getBuyQuantity();
+        int getQuantity = buyAndGetQuantity.getGetQuantity();
+
+        int promotionAppliedQuantity = getPromotionAppliedQuantity(product);
         int regularPricePaymentQuantity = purchaseQuantity - promotionAppliedQuantity; // 정가 구매 수량
 
         Choice regularPricePaymentChoice = getRegularPriceApplicationChoice(product,
@@ -109,6 +129,8 @@ public class PromotionManager {
             storeHouse.buy(regularProduct, regularPricePaymentQuantity); // 일단 정가로 일반 상품 구매 완료
         } // 정가 구매 ㄴㄴ -> promotionAppliedQuantity만 구매
         storeHouse.buy(product, promotionAppliedQuantity); // 구매 가능 프로모션 수량만 프로모션 상품 구매 완료
+        // TODO: 영수증에 증정 상품 추가
+        receipt.addFreebieProduct(product, promotionAppliedQuantity / (buyQuantity + getQuantity));
     }
 
     private Choice getRegularPriceApplicationChoice(Product product, int purchaseQuantity) {
@@ -125,16 +147,18 @@ public class PromotionManager {
                 .orElse(null);
     }
 
-    public BuyGetQuantity getBuyAndGetQuantity(Promotion promotionName) {
+    public static BuyGetQuantity getBuyAndGetQuantity(Promotion promotionName) {
         return BuyGetQuantity.of(promotionName.getBuyQuantity(), promotionName.getGetQuantity());
     }
 
-    private int getAvailablePromotionQuantity(Product product) {
+    private static int getPromotionAppliedQuantity(Product product) {
         // 프로모션에 해당하는 buy, get 수량
         BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
         int bundle = buyAndGetQuantity.getBuyQuantity() + buyAndGetQuantity.getGetQuantity();
         int promotionStock = product.getQuantity(); // 프로모션 상품의 재고
-        return promotionStock / bundle;
+        int count = promotionStock / bundle; // 프로모션을 적용할 수 있는 횟수
+
+        return count * (buyAndGetQuantity.getBuyQuantity() + buyAndGetQuantity.getGetQuantity());
     }
 
     private InputView getInputView() {

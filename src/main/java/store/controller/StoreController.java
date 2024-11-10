@@ -13,6 +13,7 @@ import store.domain.StoreHouse;
 import store.domain.StoreManager;
 import store.dto.PromotionInfo;
 import store.dto.Purchase;
+import store.dto.Receipt;
 import store.io.InputView;
 import store.io.OutputView;
 import store.service.StoreService;
@@ -61,13 +62,13 @@ public class StoreController {
         while (true) {
             outputView.printProductList(allProduct);
             // 사용자 구매
-            purchaseList = userPurchase(storeHouse);
+            Receipt receipt = userPurchase(storeHouse);
 
             // 멤버십 할인 여부
             inputView.readMembershipDiscountApplicationChoice();
 
             // 영수증 출력
-            outputView.printReceipt(purchaseList, storeHouse);
+            outputView.printReceipt(receipt, storeHouse);
 
             // 추가 구매 여부
             if (inputView.readAdditionalPurchaseChoice().equals(Choice.N)) {
@@ -76,12 +77,13 @@ public class StoreController {
         }
     }
 
-    private List<Purchase> userPurchase(StoreHouse storeHouse) {
+    private Receipt userPurchase(StoreHouse storeHouse) {
         while (true) {
             try {
                 List<Purchase> purchaseList = inputView.readProductNameAndQuantity();
-                service.purchase(purchaseList, storeHouse);
-                return purchaseList;
+                Receipt receipt = service.purchase(purchaseList, storeHouse);
+                receipt.setPurchaseList(purchaseList);
+                return receipt;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }

@@ -8,6 +8,7 @@ import store.domain.Promotion;
 import store.domain.PromotionManager;
 import store.domain.StoreHouse;
 import store.dto.Purchase;
+import store.dto.Receipt;
 
 public class StoreService {
 
@@ -17,18 +18,19 @@ public class StoreService {
         this.promotionManager = promotionManager;
     }
 
-    public void purchase(List<Purchase> purchaseList, StoreHouse storeHouse) {
+    public Receipt purchase(List<Purchase> purchaseList, StoreHouse storeHouse) {
 
         for (Purchase purchase : purchaseList) {
             validatePurchase(purchase, storeHouse);
 
             if (storeHouse.checkRegularPricePurchase(purchase.getProductName())) {
                 purchaseGeneralProduct(storeHouse, purchase);
-                return;
+                return null;
             }
             // 프로모션 구매
-            purchasePromotionProduct(purchase, storeHouse);
+            return purchasePromotionProduct(purchase, storeHouse);
         }
+        return null;
     }
 
     private void validatePurchase(Purchase purchase, StoreHouse storeHouse) {
@@ -43,7 +45,7 @@ public class StoreService {
         storeHouse.buy(products.getFirst(), purchase.getQuantity());
     }
 
-    private void purchasePromotionProduct(Purchase purchase, StoreHouse storeHouse) {
+    private Receipt purchasePromotionProduct(Purchase purchase, StoreHouse storeHouse) {
         // TODO: 프로모션 구매인 경우 구현
         List<Product> products = storeHouse.findProductByName(purchase.getProductName());
 //        Product defaultProduct = null;
@@ -55,7 +57,7 @@ public class StoreService {
             }
         }
         promotionManager.setPromotionInfo();
-        promotionManager.applyPromotion(promotionProduct, purchase.getQuantity());
+        return promotionManager.applyPromotion(promotionProduct, purchase.getQuantity());
     }
 
 

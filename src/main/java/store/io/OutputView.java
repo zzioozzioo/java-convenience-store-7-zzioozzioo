@@ -3,7 +3,7 @@ package store.io;
 import java.util.List;
 import store.domain.Product;
 import store.domain.StoreHouse;
-import store.dto.Purchase;
+import store.dto.Receipt;
 import store.io.parser.ProductListParser;
 import store.io.parser.ReceiptParser;
 import store.io.writer.Writer;
@@ -26,8 +26,8 @@ public class OutputView {
         writer.write(productList);
     }
 
-    public void printReceipt(List<Purchase> purchaseList, StoreHouse storeHouse) {
-        String receipt = receiptParser.parse(purchaseList, storeHouse);
-        writer.write(receipt);
+    public void printReceipt(Receipt receipt, StoreHouse storeHouse) {
+        String result = receiptParser.parse(receipt, storeHouse);
+        writer.write(result);
     }
 }
