@@ -91,7 +91,7 @@ public class InputView {
         return Choice.checkYesOrNo(input);
     }
 
-    public Choice readFullPricePaymentChoice(String productName, int quantity) {
+    public Choice readRegularPricePaymentChoice(String productName, int quantity) {
         while (true) {
             try {
                 writer.write(String.format(REGULAR_PRICE_BUY_MESSAGE, productName, quantity));

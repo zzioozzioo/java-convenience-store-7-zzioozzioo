@@ -117,7 +117,7 @@ public class InputViewTest {
         readerFake.setInput(input);
 
         //when
-        Choice choice = inputView.readFullPricePaymentChoice(productName, quantity);
+        Choice choice = inputView.readRegularPricePaymentChoice(productName, quantity);
 
         //then
         Assertions.assertThat(choice).isEqualTo(result);
@@ -136,7 +136,7 @@ public class InputViewTest {
         readerFake.setInput(input);
 
         //when & then
-        Assertions.assertThatThrownBy(() -> inputView.readFullPricePaymentChoice(productName, quantity))
+        Assertions.assertThatThrownBy(() -> inputView.readRegularPricePaymentChoice(productName, quantity))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

@@ -2,7 +2,6 @@ package store;
 
 import store.config.Config;
 import store.config.IoConfig;
-import store.config.ServiceConfig;
 import store.controller.StoreController;
 
 public class Application {
@@ -10,8 +9,7 @@ public class Application {
         // TODO: 프로그램 구현
 
         StoreController controller = new StoreController(
-                new IoConfig(new Config()),
-                new ServiceConfig(new Config())
+                new IoConfig(new Config())
         );
 
         controller.run();
