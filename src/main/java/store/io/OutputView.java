@@ -1,6 +1,7 @@
 package store.io;
 
 import java.util.List;
+import store.domain.MembershipManager;
 import store.domain.Product;
 import store.domain.StoreHouse;
 import store.dto.Receipt;
@@ -26,8 +27,8 @@ public class OutputView {
         writer.write(productList);
     }
 
-    public void printReceipt(Receipt receipt, StoreHouse storeHouse) {
-        String result = receiptParser.parse(receipt, storeHouse);
+    public void printReceipt(Receipt receipt, StoreHouse storeHouse, MembershipManager membershipManager) {
+        String result = receiptParser.parse(receipt, storeHouse, membershipManager);
         writer.write(result);
     }
 }

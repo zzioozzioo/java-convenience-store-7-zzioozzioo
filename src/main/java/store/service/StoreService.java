@@ -3,6 +3,8 @@ package store.service;
 import static store.constants.ErrorMessages.ZERO_QUANTITY;
 
 import java.util.List;
+import java.util.Map;
+import store.domain.MembershipManager;
 import store.domain.Product;
 import store.domain.Promotion;
 import store.domain.PromotionManager;
@@ -13,24 +15,24 @@ import store.dto.Receipt;
 public class StoreService {
 
     private final PromotionManager promotionManager;
+    private final MembershipManager membershipManager;
 
-    public StoreService(PromotionManager promotionManager) {
+    public StoreService(PromotionManager promotionManager, MembershipManager membershipManager) {
         this.promotionManager = promotionManager;
+        this.membershipManager = membershipManager;
     }
 
     public Receipt purchase(List<Purchase> purchaseList, StoreHouse storeHouse) {
-
         for (Purchase purchase : purchaseList) {
             validatePurchase(purchase, storeHouse);
 
             if (storeHouse.checkRegularPricePurchase(purchase.getProductName())) {
                 purchaseGeneralProduct(storeHouse, purchase);
-                return null;
+                return new Receipt();
             }
-            // 프로모션 구매
             return purchasePromotionProduct(purchase, storeHouse);
         }
-        return null;
+        return new Receipt();
     }
 
     private void validatePurchase(Purchase purchase, StoreHouse storeHouse) {
@@ -46,13 +48,10 @@ public class StoreService {
     }
 
     private Receipt purchasePromotionProduct(Purchase purchase, StoreHouse storeHouse) {
-        // TODO: 프로모션 구매인 경우 구현
         List<Product> products = storeHouse.findProductByName(purchase.getProductName());
-//        Product defaultProduct = null;
         Product promotionProduct = null;
         for (Product product : products) {
             if (!product.getPromotionName().equals(Promotion.NULL)) {
-//                defaultProduct = product;
                 promotionProduct = product;
             }
         }
@@ -60,5 +59,13 @@ public class StoreService {
         return promotionManager.applyPromotion(promotionProduct, purchase.getQuantity());
     }
 
+    public void applyMembershipDiscount(Receipt receipt) {
+        Map<Product, Integer> freebieProduct = receipt.getFreebieProduct();
+        List<Purchase> purchaseList = receipt.getPurchaseList();
+        for (Purchase purchase : purchaseList) {
+            membershipManager.applyDiscount(freebieProduct, purchase);
+        }
+        membershipManager.validateDiscountAmount(purchaseList);
+    }
 
 }

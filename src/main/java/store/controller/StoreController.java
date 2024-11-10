@@ -47,28 +47,26 @@ public class StoreController {
         StoreManager storeManager = new StoreManager(storeHouse);
         PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse);
         MembershipManager membershipManager = new MembershipManager(storeHouse);
-        service = new StoreService(promotionManager);
+        service = new StoreService(promotionManager, membershipManager);
 
         // 상품 세팅
         List<Product> allProduct = storeManager.getAllProduct();
 
         // 판매
-        processPurchase(allProduct, storeHouse);
+        processPurchase(allProduct, storeHouse, membershipManager);
     }
 
-    private void processPurchase(List<Product> allProduct, StoreHouse storeHouse) {
-        List<Purchase> purchaseList;
-
+    private void processPurchase(List<Product> allProduct, StoreHouse storeHouse, MembershipManager membershipManager) {
         while (true) {
             outputView.printProductList(allProduct);
             // 사용자 구매
             Receipt receipt = userPurchase(storeHouse);
 
             // 멤버십 할인 여부
-            inputView.readMembershipDiscountApplicationChoice();
+            applyMembershipDiscount(receipt);
 
             // 영수증 출력
-            outputView.printReceipt(receipt, storeHouse);
+            outputView.printReceipt(receipt, storeHouse, membershipManager);
 
             // 추가 구매 여부
             if (inputView.readAdditionalPurchaseChoice().equals(Choice.N)) {
@@ -87,6 +85,13 @@ public class StoreController {
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
+        }
+    }
+
+    private void applyMembershipDiscount(Receipt receipt) {
+        Choice membershipDiscountApplicationChoice = inputView.readMembershipDiscountApplicationChoice();
+        if (membershipDiscountApplicationChoice.equals(Choice.Y)) { // 멤버십 할인 적용
+            service.applyMembershipDiscount(receipt);
         }
     }
 
