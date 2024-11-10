@@ -53,8 +53,6 @@ public class InputViewTest {
                 .doesNotThrowAnyException();
     }
 
-    // TODO: Promotion 파일 테스트도 추가하기
-
     @Test
     void 상품명과_수량_입력_기능_테스트() {
         //given

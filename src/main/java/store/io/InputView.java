@@ -92,44 +92,26 @@ public class InputView {
     }
 
     public Choice readRegularPricePaymentChoice(String productName, int quantity) {
-        while (true) {
-            try {
-                writer.write(String.format(REGULAR_PRICE_BUY_MESSAGE, productName, quantity));
-                String input = reader.readLine();
-                writer.write(NEW_LINE);
-                validator.validateEmptyInput(input);
-                return Choice.checkYesOrNo(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+        writer.write(String.format(REGULAR_PRICE_BUY_MESSAGE, productName, quantity));
+        String input = reader.readLine();
+        writer.write(NEW_LINE);
+        validator.validateEmptyInput(input);
+        return Choice.checkYesOrNo(input);
     }
 
     public Choice readMembershipDiscountApplicationChoice() {
-        while (true) {
-            try {
-                writer.write(MEMBERSHIP_DISCOUNT_CHOICE_MESSAGE);
-                String input = reader.readLine();
-                writer.write(NEW_LINE);
-                validator.validateEmptyInput(input);
-                return Choice.checkYesOrNo(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+        writer.write(MEMBERSHIP_DISCOUNT_CHOICE_MESSAGE);
+        String input = reader.readLine();
+        writer.write(NEW_LINE);
+        validator.validateEmptyInput(input);
+        return Choice.checkYesOrNo(input);
     }
 
     public Choice readAdditionalPurchaseChoice() {
-        while (true) {
-            try {
-                writer.write(ADDITIONAL_PURCHASE_MESSAGE);
-                String input = reader.readLine();
-                writer.write(NEW_LINE);
-                validator.validateEmptyInput(input);
-                return Choice.checkYesOrNo(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+        writer.write(ADDITIONAL_PURCHASE_MESSAGE);
+        String input = reader.readLine();
+        writer.write(NEW_LINE);
+        validator.validateEmptyInput(input);
+        return Choice.checkYesOrNo(input);
     }
 }
