@@ -38,23 +38,30 @@ public class StoreController {
     }
 
     public void storeOpen() {
+        // 파일 입출력
+        StoreHouse storeHouse = inputView.readProductsFileInput(PRODUCTS_FILE_NAME);
+        List<PromotionInfo> promotionInfos = inputView.readPromotionsFileInput(PROMOTIONS_FILE_NAME);
+
+        // 매니저 세팅
+        StoreManager storeManager = new StoreManager(storeHouse);
+        PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse);
+        MembershipManager membershipManager = new MembershipManager(storeHouse);
+        service = new StoreService(promotionManager);
+
+        // 상품 세팅
+        List<Product> allProduct = storeManager.getAllProduct();
+
+        // 판매
+        processPurchase(allProduct, storeHouse);
+    }
+
+    private void processPurchase(List<Product> allProduct, StoreHouse storeHouse) {
+        List<Purchase> purchaseList;
+
         while (true) {
-
-            // 파일 입출력
-            StoreHouse storeHouse = inputView.readProductsFileInput(PRODUCTS_FILE_NAME);
-            List<PromotionInfo> promotionInfos = inputView.readPromotionsFileInput(PROMOTIONS_FILE_NAME);
-
-            // 매니저 세팅
-            StoreManager storeManager = new StoreManager(storeHouse);
-            PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse);
-            MembershipManager membershipManager = new MembershipManager(storeHouse);
-
-            // 상품 세팅
-            List<Product> allProduct = storeManager.getAllProduct();
             outputView.printProductList(allProduct);
-
             // 사용자 구매
-            List<Purchase> purchaseList = userPurchase(storeHouse);
+            purchaseList = userPurchase(storeHouse);
 
             // 멤버십 할인 여부
             inputView.readMembershipDiscountApplicationChoice();
