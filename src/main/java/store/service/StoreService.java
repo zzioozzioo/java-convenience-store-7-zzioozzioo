@@ -25,6 +25,7 @@ public class StoreService {
     public Receipt purchase(List<Purchase> purchaseList, StoreHouse storeHouse) {
         for (Purchase purchase : purchaseList) {
             validatePurchase(purchase, storeHouse);
+            validateStock(storeHouse, purchase);
 
             if (storeHouse.checkRegularPricePurchase(purchase.getProductName())) {
                 purchaseGeneralProduct(storeHouse, purchase);
@@ -40,6 +41,14 @@ public class StoreService {
             throw new IllegalArgumentException(ZERO_QUANTITY);
         }
         storeHouse.findProductByName(purchase.getProductName());
+    }
+
+    private static void validateStock(StoreHouse storeHouse, Purchase purchase) {
+        String productName = purchase.getProductName();
+        List<Product> products = storeHouse.findProductByName(productName);
+        for (Product product : products) {
+            storeHouse.checkValidStock(product, purchase.getQuantity());
+        }
     }
 
     private void purchaseGeneralProduct(StoreHouse storeHouse, Purchase purchase) {

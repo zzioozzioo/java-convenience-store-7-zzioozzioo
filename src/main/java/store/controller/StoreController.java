@@ -10,7 +10,6 @@ import store.domain.MembershipManager;
 import store.domain.Product;
 import store.domain.PromotionManager;
 import store.domain.StoreHouse;
-import store.domain.StoreManager;
 import store.dto.PromotionInfo;
 import store.dto.Purchase;
 import store.dto.Receipt;
@@ -44,13 +43,12 @@ public class StoreController {
         List<PromotionInfo> promotionInfos = inputView.readPromotionsFileInput(PROMOTIONS_FILE_NAME);
 
         // 매니저 세팅
-        StoreManager storeManager = new StoreManager(storeHouse);
         PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse);
         MembershipManager membershipManager = new MembershipManager(storeHouse);
         service = new StoreService(promotionManager, membershipManager);
 
         // 상품 세팅
-        List<Product> allProduct = storeManager.getAllProduct();
+        List<Product> allProduct = storeHouse.getProductList();
 
         // 판매
         processPurchase(allProduct, storeHouse, membershipManager);
@@ -77,8 +75,8 @@ public class StoreController {
 
     private Receipt userPurchase(StoreHouse storeHouse) {
         while (true) {
+            List<Purchase> purchaseList = inputView.readProductNameAndQuantity();
             try {
-                List<Purchase> purchaseList = inputView.readProductNameAndQuantity();
                 Receipt receipt = service.purchase(purchaseList, storeHouse);
                 receipt.setPurchaseList(purchaseList);
                 return receipt;

@@ -4,8 +4,6 @@
 
 ***
 
-[//]: # (요구사항에서 달라진 점: 입력받기 위한 문구 출력도 출력 카테고리에 포함시킴)
-
 ## 도메인 분리
 
 ### 편의점 창고
@@ -16,11 +14,6 @@
 ### 상품
 
 - [x] 개별 상품의 상품명, 가격, 수량, 프로모션 이름을 저장한다.
-
-### 편의점 매니저
-
-- [ ] 편의점 창고의 내용을 보여준다.
-- [ ] 할인을 관리한다.
 
 ### 프로모션 매니저
 
@@ -33,14 +26,6 @@
 
 - [x] 멤버쉽 할인 금액을 반환한다.
 - [x] 프로모션 미적용 금액의 30프로를 할인한다.
-
-### 계산기
-
-- [ ] 총 구매액, 할인 금액, 최종 결제 금액을 계산한다.
-
-### 고객
-
-- [ ] 구매할 상품과 수량을 제공하고, 상품을 구매한다.
 
 <br/>
 
@@ -112,15 +97,15 @@
         - [x] 구분자를 불필요하게 많이 입력한 경우
         - [x] 잘못된 구분자를 입력한 경우
     - 잘못된 상품명을 입력한 경우
-        - [ ] 상품명을 입력하지 않은 경우
-        - [ ] 존재하지 않는 상품명을 입력한 경우
-        - [ ] 상품명 앞뒤에 공백이 있는 경우(?)
+        - [x] 상품명을 입력하지 않은 경우
+        - [x] 존재하지 않는 상품명을 입력한 경우
+        - [x] 상품명 앞뒤에 공백이 있는 경우(?)
     - 잘못된 수량을 입력한 경우
         - [x] 수량을 입력하지 않은 경우
         - [x] 0을 입력한 경우
         - 재고보다 더 많은 수량을 입력한 경우
             - [x] 재고가 없는 경우는 품절 안내
-            - [ ] 재고가 부족한 경우는 남은 재고 구매 여부 확인
+            - [x] 재고가 부족한 경우는 남은 재고 구매 여부 확인
     - [x] 상품명과 수량을 모두 입력하지 않은 경우
     - [x] 상품명과 수량을 구분하는 구분자를 잘못 입력한 경우
 
@@ -157,25 +142,25 @@
 
 ### 제출 전 확인 리스트
 
-- [ ] JDK-21 사용
-- [ ] 프로그램 실행의 시작점은 `Application`의 `main()`
-- [ ] `build.gradle` 변경 불가, 제공된 라이브러리만 사용
-- [ ] [Java Style Guide](https://github.com/woowacourse/woowacourse-docs/tree/main/styleguide/java)를 준수하며 프로그래밍
-- [ ] 프로그램 종료 시`System.exit()`를 호출 X
+- [x] JDK-21 사용
+- [x] 프로그램 실행의 시작점은 `Application`의 `main()`
+- [x] `build.gradle` 변경 불가, 제공된 라이브러리만 사용
+- [x] [Java Style Guide](https://github.com/woowacourse/woowacourse-docs/tree/main/styleguide/java)를 준수하며 프로그래밍
+- [x] 프로그램 종료 시`System.exit()`를 호출 X
 - [ ] 프로그램 구현 완료 시 `ApplicationTest`의 모든 테스트가 성공
-- [ ] 프로그래밍 요구 사항에서 달리 명시하지 않는 한 파일, 패키지 이름을 수정하거나 이동 X
+- [x] 프로그래밍 요구 사항에서 달리 명시하지 않는 한 파일, 패키지 이름을 수정하거나 이동 X
 - [ ] indent(인덴트, 들여쓰기) depth를 3이 넘지 않도록 구현(2까지만 허용)
-- [ ] 3항 연산자 사용 X
+- [x] 3항 연산자 사용 X
 - [ ] 함수(또는 메서드)가 한 가지 일만 하도록 최대한 작게 만들기
 - [ ] JUnit 5와 AssertJ를 이용하여 정리한 기능 목록이 정상적으로 작동하는지 테스트 코드로 확인
 - [ ] 함수(또는 메서드)의 길이가 10라인을 넘어가지 않도록 구현
-- [ ] else 예약어 사용 X
-- [ ] Java Enum을 적용하여 프로그램을 구현
+- [x] else 예약어 사용 X
+- [x] Java Enum을 적용하여 프로그램을 구현
 - [ ] 구현한 기능에 대한 단위 테스트를 작성(단, UI(System.out, System.in, Scanner) 로직은 제외)
-- [ ] 입출력을 담당하는 클래스를 별도로 구현
+- [x] 입출력을 담당하는 클래스를 별도로 구현
 
 ### 라이브러리 요구 사항
 
-- [ ] camp.nextstep.edu.missionutils에서 제공하는 DateTimes 및 Console API를 사용하여 구현
-- [ ] 사용자가 입력하는 값은 camp.nextstep.edu.missionutils.Console의 readLine()을 활용
-- [ ] 현재 날짜와 시간을 가져오려면 camp.nextstep.edu.missionutils.DateTimes의 now()를 활용
+- [x] camp.nextstep.edu.missionutils에서 제공하는 DateTimes 및 Console API를 사용하여 구현
+- [x] 사용자가 입력하는 값은 camp.nextstep.edu.missionutils.Console의 readLine()을 활용
+- [x] 현재 날짜와 시간을 가져오려면 camp.nextstep.edu.missionutils.DateTimes의 now()를 활용

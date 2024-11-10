@@ -2,19 +2,19 @@ package store.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import store.exception.OutOfStockQuantityException;
 import store.exception.ProductNotExistException;
 
 public class StoreHouse {
 
     private final List<Product> productList = new ArrayList<>();
 
+
     public void buy(Product product, int quantity) {
         product.sell(quantity);
     }
 
     public List<Product> findProductByName(String productName) {
-        // TODO: 상품명 동일한 것 다 가져오되, 프로모션인지 아닌지 구분할 수 있는 로직 추가하기
-
         List<Product> filteredProduct = productList.stream()
                 .filter(product -> product.getName().equals(productName))
                 .toList();
@@ -24,6 +24,13 @@ public class StoreHouse {
         }
 
         return filteredProduct;
+    }
+
+    public int checkValidStock(Product product, int purchaseQuantity) {
+        if (product.getQuantity() < purchaseQuantity) {
+            throw new OutOfStockQuantityException();
+        }
+        return product.getQuantity();
     }
 
     public boolean checkRegularPricePurchase(String productName) {
@@ -40,7 +47,7 @@ public class StoreHouse {
         productList.add(product);
     }
 
-    List<Product> getProductList() {
+    public List<Product> getProductList() {
         return productList;
     }
 }

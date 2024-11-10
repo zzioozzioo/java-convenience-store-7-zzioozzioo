@@ -38,25 +38,15 @@ public class PromotionManager {
             processRegularPricePayment(product, purchaseQuantity);
             return receipt;
         }
-        // TODO: 프로모션 + 일반 재고 합해서 재고 부족한지 확인
-//        validateTotalStock(product, purchaseQuantity);
-        System.out.println("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
+        return getReceiptWhenPromotionPayment(product, purchaseQuantity, receipt);
+    }
 
-        // 프로모션 재고가 있는 경우
+    private Receipt getReceiptWhenPromotionPayment(Product product, int purchaseQuantity, Receipt receipt) {
         if (processFullPromotionPayment(receipt, product, purchaseQuantity)) {
             return receipt;
         }
-        // 프로모션 재고가 부족한 경우
         processPartialPromotionPayment(receipt, product, purchaseQuantity);
         return receipt;
-    }
-
-    private void validateTotalStock(Product product, int purchaseQuantity) {
-        List<Product> products = storeHouse.findProductByName(product.getName());
-        for (Product prdt : products) {
-            storeHouse.checkValidStock(prdt, purchaseQuantity);
-            return;
-        }
     }
 
     private boolean isValidPromotionApplicable(Product product, int purchaseQuantity) {
@@ -92,13 +82,13 @@ public class PromotionManager {
         int buyQuantity = buyAndGetQuantity.getBuyQuantity();
         int getQuantity = buyAndGetQuantity.getGetQuantity();
 
-        if (purchaseQuantity <= product.getQuantity()) { // 구매 수량과 프로모션 재고 비교
+        if (purchaseQuantity <= product.getQuantity()) {
             int remainder = purchaseQuantity % (buyQuantity + getQuantity);
-            if (remainder != 0 && remainder < buyQuantity) { // 증정품 하나 추가할 수 있는지 확인
+            if (remainder != 0 && remainder < buyQuantity) {
                 Choice freebieAdditionChoice = getInputView().readFreebieAdditionChoice(product.getName());
                 int totalPurchaseQuantity = purchaseQuantity;
-                totalPurchaseQuantity = getTotalPurchaseQuantity(product, freebieAdditionChoice, totalPurchaseQuantity);
-                if (purchaseQuantity == (buyQuantity - remainder)) { // 증정품 하나를 일반 상품에서 소진
+                totalPurchaseQuantity = getTotalPurchaseQuantity(freebieAdditionChoice, totalPurchaseQuantity);
+                if (purchaseQuantity == (buyQuantity - remainder)) {
                     processRegularPricePayment(product, 1);
                     receipt.addFreebieProduct(product, 1);
                     return true;
@@ -111,9 +101,8 @@ public class PromotionManager {
         return false;
     }
 
-    private static int getTotalPurchaseQuantity(Product product, Choice freebieAdditionChoice,
-                                                int totalPurchaseQuantity) {
-        if (freebieAdditionChoice.equals(Choice.Y)) { // 추가하는 경우
+    private static int getTotalPurchaseQuantity(Choice freebieAdditionChoice, int totalPurchaseQuantity) {
+        if (freebieAdditionChoice.equals(Choice.Y)) {
             totalPurchaseQuantity += 1;
         }
         return totalPurchaseQuantity;
@@ -125,18 +114,16 @@ public class PromotionManager {
         int getQuantity = buyAndGetQuantity.getGetQuantity();
 
         int promotionAppliedQuantity = getPromotionAppliedQuantity(product);
-        int regularPricePaymentQuantity = purchaseQuantity - promotionAppliedQuantity; // 정가 구매 수량
-
-//        Product regular = findProductByPromotionName(product, Promotion.NULL);
+        int regularPricePaymentQuantity = purchaseQuantity - promotionAppliedQuantity;
 
         Choice regularPricePaymentChoice = getRegularPriceApplicationChoice(product,
-                regularPricePaymentQuantity); // 정가 구매 여부
+                regularPricePaymentQuantity);
         if (regularPricePaymentChoice.equals(
-                Choice.Y)) { // 정가 구매 ㄱㅊ -> promotionAppliedQuantity는 프로모션 적용, 나머지는 정가로 일반 상품 구매
+                Choice.Y)) {
             Product regularProduct = findProductByPromotionName(product, Promotion.NULL);
-            storeHouse.buy(regularProduct, regularPricePaymentQuantity); // 일단 정가로 일반 상품 구매 완료
-        } // 정가 구매 ㄴㄴ -> promotionAppliedQuantity만 구매
-        storeHouse.buy(product, promotionAppliedQuantity); // 구매 가능 프로모션 수량만 프로모션 상품 구매 완료
+            storeHouse.buy(regularProduct, regularPricePaymentQuantity);
+        }
+        storeHouse.buy(product, promotionAppliedQuantity);
         receipt.addFreebieProduct(product, promotionAppliedQuantity / (buyQuantity + getQuantity));
     }
 
@@ -159,11 +146,10 @@ public class PromotionManager {
     }
 
     private static int getPromotionAppliedQuantity(Product product) {
-        // 프로모션에 해당하는 buy, get 수량
         BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
         int bundle = buyAndGetQuantity.getBuyQuantity() + buyAndGetQuantity.getGetQuantity();
-        int promotionStock = product.getQuantity(); // 프로모션 상품의 재고
-        int count = promotionStock / bundle; // 프로모션을 적용할 수 있는 횟수
+        int promotionStock = product.getQuantity();
+        int count = promotionStock / bundle;
 
         return count * (buyAndGetQuantity.getBuyQuantity() + buyAndGetQuantity.getGetQuantity());
     }
