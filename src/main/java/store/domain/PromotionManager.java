@@ -99,16 +99,15 @@ public class PromotionManager {
         BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
         int buyQuantity = buyAndGetQuantity.getBuyQuantity();
         int getQuantity = buyAndGetQuantity.getGetQuantity();
+        int totalPurchaseQuantity = purchaseQuantity;
         if (purchaseQuantity % (buyQuantity + getQuantity) != ZERO) {
-            addOneFreebie(receipt, product, purchaseQuantity);
+            totalPurchaseQuantity = addOneFreebie(receipt, product, purchaseQuantity);
         }
-        // TODO: 중복으로 buy되는 것 같음. 다시 확인해 보기
-        storeHouse.buy(product, purchaseQuantity);
-        receipt.addFreebieProduct(product, purchaseQuantity * (getQuantity / (buyQuantity + getQuantity)));
+        receipt.addFreebieProduct(product, totalPurchaseQuantity / (buyQuantity + getQuantity));
         return true; // true여야 PartialPromotion으로 안 넘어가고 바로 리턴
     }
 
-    private void addOneFreebie(Receipt receipt, Product product, int purchaseQuantity) {
+    private int addOneFreebie(Receipt receipt, Product product, int purchaseQuantity) {
         Choice freebieAdditionChoice = getInputView().readFreebieAdditionChoice(product.getName());
         int totalPurchaseQuantity = purchaseQuantity;
         if (freebieAdditionChoice.equals(Choice.Y)) {
@@ -116,6 +115,7 @@ public class PromotionManager {
             addFreebieFromRegularProduct(receipt, product, purchaseQuantity);
         }
         storeHouse.buy(product, totalPurchaseQuantity);
+        return totalPurchaseQuantity;
     }
 
     private void addFreebieFromRegularProduct(Receipt receipt, Product product, int purchaseQuantity) {
