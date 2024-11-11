@@ -1,6 +1,7 @@
 package store.domain;
 
 import static store.constants.NumberConstants.FREEBIE_QUANTITY;
+import static store.constants.NumberConstants.ZERO;
 
 import java.util.List;
 import store.dto.BuyGetQuantity;
@@ -98,11 +99,12 @@ public class PromotionManager {
         BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
         int buyQuantity = buyAndGetQuantity.getBuyQuantity();
         int getQuantity = buyAndGetQuantity.getGetQuantity();
-        if (purchaseQuantity % (buyQuantity + getQuantity) == FREEBIE_QUANTITY) {
+        if (purchaseQuantity % (buyQuantity + getQuantity) != ZERO) {
             addOneFreebie(receipt, product, purchaseQuantity);
         }
+        // TODO: 중복으로 buy되는 것 같음. 다시 확인해 보기
         storeHouse.buy(product, purchaseQuantity);
-        receipt.addFreebieProduct(product, purchaseQuantity / (buyQuantity + getQuantity));
+        receipt.addFreebieProduct(product, purchaseQuantity * (getQuantity / (buyQuantity + getQuantity)));
         return true; // true여야 PartialPromotion으로 안 넘어가고 바로 리턴
     }
 
