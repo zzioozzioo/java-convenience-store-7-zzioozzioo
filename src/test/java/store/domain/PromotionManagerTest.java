@@ -1,16 +1,23 @@
 package store.domain;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static store.domain.Promotion.NULL;
 import static store.domain.Promotion.SPARKLING_BUY_TWO_GET_ONE_FREE;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import store.dto.BuyGetQuantity;
 import store.dto.PromotionInfo;
+import store.io.InputValidator;
+import store.io.InputView;
+import store.io.reader.MissionUtilsReader;
+import store.io.writer.SystemWriter;
+import store.testutil.ReaderFake;
 
 class PromotionManagerTest {
 
@@ -43,15 +50,12 @@ class PromotionManagerTest {
     }
 
     @Test
-    void 오늘_날짜가_프로모션_기간_내에_포함된_경우_프로모션을_적용한다() {
+    void 프로모션이_유효한지_확인한다() {
         //given
         PromotionManager manager = getPromotionManager();
-        manager.setPromotionInfo();
-
-        Promotion promotionName = Promotion.MD_RECOMMENDATION;
 
         //when
-        boolean result = manager.checkValidPromotion(promotionName);
+        boolean result = manager.isValidPromotionApplicable(getProduct(), 2);
 
         //then
         Assertions.assertThat(result).isTrue();
@@ -66,7 +70,7 @@ class PromotionManagerTest {
         Promotion promotionName = Promotion.FLASH_SALE;
 
         //when
-        BuyGetQuantity buyGetQuantity = manager.getBuyAndGetQuantity(promotionName);
+        BuyGetQuantity buyGetQuantity = PromotionManager.getBuyAndGetQuantity(promotionName);
 
         //then
         Assertions.assertThat(buyGetQuantity.getBuyQuantity()).isEqualTo(1);
@@ -75,31 +79,33 @@ class PromotionManagerTest {
 
     @Test
     void 프로모션_적용_테스트() {
-        //given
-        PromotionManager manager = getPromotionManager();
-        manager.setPromotionInfo();
+        // given
+        ReaderFake readerFake = new ReaderFake();
+        readerFake.setInput("Y", "N");
 
+        InputView inputView = new InputView(readerFake, new SystemWriter(), new InputValidator());
         StoreHouse storeHouse = new StoreHouse();
+
         Product product1 = new Product("콜라", 1000, 7, SPARKLING_BUY_TWO_GET_ONE_FREE);
         Product product2 = new Product("콜라", 1000, 10, NULL);
         storeHouse.addProduct(product1);
         storeHouse.addProduct(product2);
 
-        //when
-        PromotionResult actualResult = manager.applyPromotion(
-                new Product("콜라", 1000, 7, SPARKLING_BUY_TWO_GET_ONE_FREE), 10);
-        PromotionResult expectedResult = new PromotionResult("현재 콜라 4개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)", true,
-                4);
+        List<PromotionInfo> promotionInfos = getPromotionInfos();
+        PromotionManager manager = new PromotionManager(promotionInfos, storeHouse, inputView);
+        manager.setPromotionInfo();
 
-        //then
-        Assertions.assertThat(actualResult.getMessage()).isEqualTo(expectedResult.getMessage());
-        Assertions.assertThat(actualResult.getRequiresInput()).isEqualTo(expectedResult.getRequiresInput());
-        Assertions.assertThat(actualResult.getRegularPriceQuantity())
-                .isEqualTo(expectedResult.getRegularPriceQuantity());
+        // when
+        Receipt receipt = manager.applyPromotion(product1, 2);
+        Map<Product, Integer> freebieProduct = receipt.getFreebieProduct();
+        Integer quantity = freebieProduct.get(product1);
+
+        // then
+        assertThat(quantity).isEqualTo(1);
     }
 
-    private PromotionManager getPromotionManager() {
-        List<PromotionInfo> promotionInfos = List.of(
+    private static List<PromotionInfo> getPromotionInfos() {
+        return List.of(
                 new PromotionInfo(SPARKLING_BUY_TWO_GET_ONE_FREE, 2, 1,
                         LocalDateTime.parse("2024-01-01T00:00:00"), LocalDateTime.parse("2024-12-31T23:59:59")),
                 new PromotionInfo(Promotion.MD_RECOMMENDATION, 1, 1,
@@ -107,6 +113,21 @@ class PromotionManagerTest {
                 new PromotionInfo(Promotion.FLASH_SALE, 1, 1, LocalDateTime.parse("2024-11-01T00:00:00"),
                         LocalDateTime.parse("2024-11-30T23:59:59"))
         );
-        return new PromotionManager(promotionInfos, new StoreHouse());
+    }
+
+    private PromotionManager getPromotionManager() {
+        return new PromotionManager(getPromotionInfos(), new StoreHouse(), getInputView());
+    }
+
+    private Product getProduct() {
+        Promotion.setPromotionPeriods(SPARKLING_BUY_TWO_GET_ONE_FREE,
+                LocalDateTime.parse("2024-01-01T00:00:00"),
+                LocalDateTime.parse("2024-12-31T23:59:59"));
+        return new Product("콜라", 1000, 10, SPARKLING_BUY_TWO_GET_ONE_FREE);
+    }
+
+    private InputView getInputView() {
+        return new InputView(new MissionUtilsReader(), new SystemWriter(),
+                new InputValidator());
     }
 }
