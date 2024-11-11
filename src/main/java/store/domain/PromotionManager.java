@@ -98,13 +98,12 @@ public class PromotionManager {
         BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
         int buyQuantity = buyAndGetQuantity.getBuyQuantity();
         int getQuantity = buyAndGetQuantity.getGetQuantity();
-        int remainder = purchaseQuantity % (buyQuantity + getQuantity);
-        if (remainder == FREEBIE_QUANTITY) {
+        if (purchaseQuantity % (buyQuantity + getQuantity) == FREEBIE_QUANTITY) {
             addOneFreebie(receipt, product, purchaseQuantity);
-            receipt.addFreebieProduct(product, getPromotionAppliedQuantity(product) / (buyQuantity + getQuantity));
-            return true;
         }
-        return false;
+        storeHouse.buy(product, purchaseQuantity);
+        receipt.addFreebieProduct(product, purchaseQuantity / (buyQuantity + getQuantity));
+        return true; // true여야 PartialPromotion으로 안 넘어가고 바로 리턴
     }
 
     private void addOneFreebie(Receipt receipt, Product product, int purchaseQuantity) {
@@ -137,7 +136,11 @@ public class PromotionManager {
 
         // TODO: 음수로 나오는 에러 해결하기
         int regularPricePaymentQuantity = purchaseQuantity - promotionAppliedQuantity;
+        // 만약에 regularPricePaymentQuantity <= 0이면 정가 구매 어찌구 출력 X
 
+//        if (regularPricePaymentQuantity <= 0) {
+//            storeHouse.buy(product, purchaseQuantity);
+//        }
         Choice regularPricePaymentChoice = getRegularPriceApplicationChoice(product,
                 regularPricePaymentQuantity);
         if (regularPricePaymentChoice.equals(
@@ -149,7 +152,6 @@ public class PromotionManager {
         receipt.addFreebieProduct(product, promotionAppliedQuantity / (buyQuantity + getQuantity));
     }
 
-    // TODO: 얘를 수정해야 할 듯
     private int getPromotionAppliedQuantity(Product product) {
         BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
         int bundle = buyAndGetQuantity.getBuyQuantity() + buyAndGetQuantity.getGetQuantity();
