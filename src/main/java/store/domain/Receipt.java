@@ -1,11 +1,11 @@
-package store.dto;
+package store.domain;
 
 import static store.constants.NumberConstants.ZERO;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import store.domain.Product;
+import store.dto.Purchase;
 
 public class Receipt {
 

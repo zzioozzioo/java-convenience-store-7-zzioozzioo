@@ -9,10 +9,10 @@ import store.domain.Choice;
 import store.domain.MembershipManager;
 import store.domain.Product;
 import store.domain.PromotionManager;
+import store.domain.Receipt;
 import store.domain.StoreHouse;
 import store.dto.PromotionInfo;
 import store.dto.Purchase;
-import store.dto.Receipt;
 import store.io.InputView;
 import store.io.OutputView;
 import store.service.StoreService;
@@ -41,7 +41,7 @@ public class StoreController {
         StoreHouse storeHouse = inputView.readProductsFileInput(PRODUCTS_FILE_NAME);
         List<PromotionInfo> promotionInfos = inputView.readPromotionsFileInput(PROMOTIONS_FILE_NAME);
 
-        PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse);
+        PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse, inputView);
         MembershipManager membershipManager = new MembershipManager(storeHouse);
         service = new StoreService(promotionManager, membershipManager);
 

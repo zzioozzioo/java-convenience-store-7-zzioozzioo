@@ -8,9 +8,9 @@ import store.domain.MembershipManager;
 import store.domain.Product;
 import store.domain.Promotion;
 import store.domain.PromotionManager;
+import store.domain.Receipt;
 import store.domain.StoreHouse;
 import store.dto.Purchase;
-import store.dto.Receipt;
 import store.exception.InvalidInputFormatException;
 import store.exception.OutOfStockQuantityException;
 

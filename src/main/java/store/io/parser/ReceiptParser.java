@@ -19,28 +19,28 @@ import java.util.Map;
 import store.constants.StringConstants;
 import store.domain.MembershipManager;
 import store.domain.Product;
+import store.domain.Receipt;
 import store.domain.StoreHouse;
 import store.dto.Purchase;
-import store.dto.Receipt;
 
 public class ReceiptParser {
 
     public String parse(Receipt receipt, StoreHouse storeHouse, MembershipManager membershipManager) {
         StringBuilder sb = new StringBuilder();
-        appendPurchaseList(sb, receipt.getPurchaseList(), storeHouse);
+        appendPurchaseList(sb, receipt, storeHouse);
         appendFreebieList(sb, receipt);
         appendAmountInfo(sb, receipt, storeHouse, membershipManager);
         return sb.toString();
     }
 
-    private void appendPurchaseList(StringBuilder sb, List<Purchase> purchaseList, StoreHouse storeHouse) {
+    private void appendPurchaseList(StringBuilder sb, Receipt receipt, StoreHouse storeHouse) {
         sb.append(PURCHASER_LIST_FORMAT)
-                .append(getFormattedPurchaseList(purchaseList, storeHouse));
+                .append(getFormattedPurchaseList(receipt, storeHouse));
     }
 
-    private String getFormattedPurchaseList(List<Purchase> purchaseList, StoreHouse storeHouse) {
+    private String getFormattedPurchaseList(Receipt receipt, StoreHouse storeHouse) {
         StringBuilder sb = new StringBuilder();
-        for (Purchase purchase : purchaseList) {
+        for (Purchase purchase : receipt.getPurchaseList()) {
             String productName = purchase.getProductName();
             int quantity = purchase.getQuantity();
             List<Product> products = storeHouse.findProductByName(productName);
@@ -127,17 +127,4 @@ public class ReceiptParser {
         long result = totalPurchaseAmount - totalPromotionDiscountAmount - totalMembershipDiscountAmount;
         return String.format(NUMBER_FORMAT_WITH_COMMA, result);
     }
-
-    //출력 형식
-    //===========W 편의점=============
-    //상품명		수량	금액
-    //콜라		3 	3,000
-    //에너지바 		5 	10,000
-    //===========증	정=============
-    //콜라		1
-    //==============================
-    //총구매액		8	13,000
-    //행사할인			-1,000
-    //멤버십할인			-3,000
-    //내실돈			 9,000
 }
