@@ -1,5 +1,7 @@
 package store.service;
 
+import static store.constants.NumberConstants.ZERO;
+
 import java.util.List;
 import java.util.Map;
 import store.domain.MembershipManager;
@@ -46,7 +48,7 @@ public class StoreService {
     private static void validateStock(StoreHouse storeHouse, Purchase purchase) {
         String productName = purchase.getProductName();
         List<Product> products = storeHouse.findProductByName(productName);
-        int sum = 0;
+        int sum = ZERO;
         for (Product product : products) {
             sum += product.getQuantity();
         }

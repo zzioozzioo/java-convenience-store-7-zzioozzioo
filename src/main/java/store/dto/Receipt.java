@@ -1,5 +1,7 @@
 package store.dto;
 
+import static store.constants.NumberConstants.ZERO;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +13,7 @@ public class Receipt {
     private final Map<Product, Integer> freebieProduct = new LinkedHashMap<>();
 
     public void addFreebieProduct(Product product, int quantity) {
-        freebieProduct.put(product, freebieProduct.getOrDefault(product, 0) + quantity);
+        freebieProduct.put(product, freebieProduct.getOrDefault(product, ZERO) + quantity);
     }
 
     public List<Purchase> getPurchaseList() {

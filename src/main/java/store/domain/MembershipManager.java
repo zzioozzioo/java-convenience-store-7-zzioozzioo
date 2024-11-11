@@ -1,5 +1,9 @@
 package store.domain;
 
+import static store.constants.NumberConstants.MEMBERSHIP_DISCOUNT_LIMIT;
+import static store.constants.NumberConstants.MEMBERSHIP_DISCOUNT_RATIO;
+import static store.constants.NumberConstants.ZERO;
+
 import java.util.List;
 import java.util.Map;
 import store.dto.Purchase;
@@ -34,7 +38,7 @@ public class MembershipManager {
         List<Product> products = storeHouse.findProductByName(productName);
 
         if (!products.isEmpty()) {
-            long price = products.get(0).getPrice();
+            long price = products.getFirst().getPrice();
             regularPriceAmount += (price * quantity);
         }
     }
@@ -56,14 +60,14 @@ public class MembershipManager {
     }
 
     public void calculateDiscountAmount() {
-        discountAmount = (long) (regularPriceAmount * 0.3);
-        if (discountAmount > 8_000L) {
-            discountAmount = 8_000L;
+        discountAmount = (long) (regularPriceAmount * MEMBERSHIP_DISCOUNT_RATIO);
+        if (discountAmount > MEMBERSHIP_DISCOUNT_LIMIT) {
+            discountAmount = MEMBERSHIP_DISCOUNT_LIMIT;
         }
     }
 
     public void validateDiscountAmount(List<Purchase> purchaseList) {
-        long totalPrice = 0;
+        long totalPrice = ZERO;
         for (Purchase purchase : purchaseList) {
             List<Product> products = storeHouse.findProductByName(purchase.getProductName());
             totalPrice += products.getFirst().getPrice();

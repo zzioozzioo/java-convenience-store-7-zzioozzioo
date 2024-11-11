@@ -123,7 +123,7 @@ public class PromotionManager {
         int getQuantity = buyAndGetQuantity.getGetQuantity();
         int remainder = purchaseQuantity % (buyQuantity + getQuantity);
         if (purchaseQuantity == (product.getQuantity() - remainder)) { // 증정품 1개만 일반 재고 사용
-            processRegularPricePayment(product, 1);
+            processRegularPricePayment(product, FREEBIE_QUANTITY);
             receipt.addFreebieProduct(product, FREEBIE_QUANTITY);
         }
     }

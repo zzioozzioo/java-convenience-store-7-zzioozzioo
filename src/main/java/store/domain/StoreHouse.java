@@ -1,8 +1,9 @@
 package store.domain;
 
+import static store.constants.NumberConstants.SINGLE_PRODUCT_QUANTITY;
+
 import java.util.ArrayList;
 import java.util.List;
-import store.exception.OutOfStockQuantityException;
 import store.exception.ProductNotExistException;
 
 public class StoreHouse {
@@ -26,13 +27,6 @@ public class StoreHouse {
         return filteredProduct;
     }
 
-    public int checkValidStock(Product product, int purchaseQuantity) {
-        if (product.getQuantity() < purchaseQuantity) {
-            throw new OutOfStockQuantityException();
-        }
-        return product.getQuantity();
-    }
-
     public boolean checkRegularPricePurchase(String productName) {
         int count = (int) productList.stream()
                 .filter(product -> product.getName().equals(productName))
@@ -40,7 +34,7 @@ public class StoreHouse {
         List<Product> products = findProductByName(productName);
         Promotion promotionName = products.getFirst().getPromotionName();
 
-        return count == 1 && promotionName.equals(Promotion.NULL);
+        return count == SINGLE_PRODUCT_QUANTITY && promotionName.equals(Promotion.NULL);
     }
 
     public void addProduct(Product product) {
