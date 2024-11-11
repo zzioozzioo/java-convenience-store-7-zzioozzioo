@@ -1,5 +1,7 @@
 package store.domain;
 
+import static store.constants.NumberConstants.FREEBIE_QUANTITY;
+
 import java.util.List;
 import store.dto.BuyGetQuantity;
 import store.dto.PromotionInfo;
@@ -22,12 +24,10 @@ public class PromotionManager {
     public void setPromotionInfo() {
         promotionInfos.forEach(promotionInfo -> {
             Promotion.setQuantity(
-                    promotionInfo.getPromotionName(), promotionInfo.getBuyQuantity(),
-                    promotionInfo.getGetQuantity()
+                    promotionInfo.getPromotionName(), promotionInfo.getBuyQuantity(), promotionInfo.getGetQuantity()
             );
             Promotion.setPromotionPeriods(
-                    promotionInfo.getPromotionName(), promotionInfo.getStartDateTime(),
-                    promotionInfo.getEndDateTime()
+                    promotionInfo.getPromotionName(), promotionInfo.getStartDateTime(), promotionInfo.getEndDateTime()
             );
         });
     }
@@ -39,14 +39,6 @@ public class PromotionManager {
             return receipt;
         }
         return getReceiptWhenPromotionPayment(product, purchaseQuantity, receipt);
-    }
-
-    private Receipt getReceiptWhenPromotionPayment(Product product, int purchaseQuantity, Receipt receipt) {
-        if (processFullPromotionPayment(receipt, product, purchaseQuantity)) {
-            return receipt;
-        }
-        processPartialPromotionPayment(receipt, product, purchaseQuantity);
-        return receipt;
     }
 
     private boolean isValidPromotionApplicable(Product product, int purchaseQuantity) {
@@ -77,35 +69,63 @@ public class PromotionManager {
         storeHouse.buy(generalProduct, purchaseQuantity);
     }
 
+    private Product findProductByPromotionName(Product product, Promotion promotionName) {
+        List<Product> products = storeHouse.findProductByName(product.getName());
+
+        return products.stream()
+                .filter(prdt -> !prdt.getPromotionName().equals(promotionName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Receipt getReceiptWhenPromotionPayment(Product product, int purchaseQuantity, Receipt receipt) {
+        if (processFullPromotionPayment(receipt, product, purchaseQuantity)) {
+            return receipt;
+        }
+        processPartialPromotionPayment(receipt, product, purchaseQuantity);
+        return receipt;
+    }
+
     private boolean processFullPromotionPayment(Receipt receipt, Product product, int purchaseQuantity) {
-        BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
-        int buyQuantity = buyAndGetQuantity.getBuyQuantity();
-        int getQuantity = buyAndGetQuantity.getGetQuantity();
 
         if (purchaseQuantity <= product.getQuantity()) {
-            int remainder = purchaseQuantity % (buyQuantity + getQuantity);
-            if (remainder != 0 && remainder < buyQuantity) {
-                Choice freebieAdditionChoice = getInputView().readFreebieAdditionChoice(product.getName());
-                int totalPurchaseQuantity = purchaseQuantity;
-                totalPurchaseQuantity = getTotalPurchaseQuantity(freebieAdditionChoice, totalPurchaseQuantity);
-                if (purchaseQuantity == (buyQuantity - remainder)) {
-                    processRegularPricePayment(product, 1);
-                    receipt.addFreebieProduct(product, 1);
-                    return true;
-                }
-                storeHouse.buy(product, totalPurchaseQuantity);
-                receipt.addFreebieProduct(product, getPromotionAppliedQuantity(product) / (buyQuantity + getQuantity));
-                return true;
-            }
+            return canAddOneFreebie(receipt, product, purchaseQuantity);
         }
         return false;
     }
 
-    private static int getTotalPurchaseQuantity(Choice freebieAdditionChoice, int totalPurchaseQuantity) {
-        if (freebieAdditionChoice.equals(Choice.Y)) {
-            totalPurchaseQuantity += 1;
+    private boolean canAddOneFreebie(Receipt receipt, Product product, int purchaseQuantity) {
+        BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
+        int buyQuantity = buyAndGetQuantity.getBuyQuantity();
+        int getQuantity = buyAndGetQuantity.getGetQuantity();
+        int remainder = purchaseQuantity % (buyQuantity + getQuantity);
+        if (remainder == FREEBIE_QUANTITY) {
+            addOneFreebie(receipt, product, purchaseQuantity);
+            receipt.addFreebieProduct(product, getPromotionAppliedQuantity(product) / (buyQuantity + getQuantity));
+            return true;
         }
-        return totalPurchaseQuantity;
+        return false;
+    }
+
+    private void addOneFreebie(Receipt receipt, Product product, int purchaseQuantity) {
+        Choice freebieAdditionChoice = getInputView().readFreebieAdditionChoice(product.getName());
+        int totalPurchaseQuantity = purchaseQuantity;
+        if (freebieAdditionChoice.equals(Choice.Y)) {
+            totalPurchaseQuantity += FREEBIE_QUANTITY;
+            addFreebieFromRegularProduct(receipt, product, purchaseQuantity);
+        }
+        storeHouse.buy(product, totalPurchaseQuantity);
+    }
+
+    private void addFreebieFromRegularProduct(Receipt receipt, Product product, int purchaseQuantity) {
+        BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
+        int buyQuantity = buyAndGetQuantity.getBuyQuantity();
+        int getQuantity = buyAndGetQuantity.getGetQuantity();
+        int remainder = purchaseQuantity % (buyQuantity + getQuantity);
+        if (purchaseQuantity == (product.getQuantity() - remainder)) { // 증정품 1개만 일반 재고 사용
+            processRegularPricePayment(product, 1);
+            receipt.addFreebieProduct(product, FREEBIE_QUANTITY);
+        }
     }
 
     private void processPartialPromotionPayment(Receipt receipt, Product product, int purchaseQuantity) {
@@ -114,6 +134,8 @@ public class PromotionManager {
         int getQuantity = buyAndGetQuantity.getGetQuantity();
 
         int promotionAppliedQuantity = getPromotionAppliedQuantity(product);
+
+        // TODO: 음수로 나오는 에러 해결하기
         int regularPricePaymentQuantity = purchaseQuantity - promotionAppliedQuantity;
 
         Choice regularPricePaymentChoice = getRegularPriceApplicationChoice(product,
@@ -127,31 +149,23 @@ public class PromotionManager {
         receipt.addFreebieProduct(product, promotionAppliedQuantity / (buyQuantity + getQuantity));
     }
 
-    private Choice getRegularPriceApplicationChoice(Product product, int purchaseQuantity) {
-        return getInputView().readRegularPricePaymentChoice(product.getName(), purchaseQuantity);
-    }
-
-
-    private Product findProductByPromotionName(Product product, Promotion promotionName) {
-        List<Product> products = storeHouse.findProductByName(product.getName());
-
-        return products.stream()
-                .filter(prdt -> !prdt.getPromotionName().equals(promotionName))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public static BuyGetQuantity getBuyAndGetQuantity(Promotion promotionName) {
-        return BuyGetQuantity.of(promotionName.getBuyQuantity(), promotionName.getGetQuantity());
-    }
-
-    private static int getPromotionAppliedQuantity(Product product) {
+    // TODO: 얘를 수정해야 할 듯
+    private int getPromotionAppliedQuantity(Product product) {
         BuyGetQuantity buyAndGetQuantity = getBuyAndGetQuantity(product.getPromotionName());
         int bundle = buyAndGetQuantity.getBuyQuantity() + buyAndGetQuantity.getGetQuantity();
         int promotionStock = product.getQuantity();
         int count = promotionStock / bundle;
 
         return count * (buyAndGetQuantity.getBuyQuantity() + buyAndGetQuantity.getGetQuantity());
+    }
+
+    private Choice getRegularPriceApplicationChoice(Product product, int purchaseQuantity) {
+        return getInputView().readRegularPricePaymentChoice(product.getName(), purchaseQuantity);
+    }
+
+
+    public static BuyGetQuantity getBuyAndGetQuantity(Promotion promotionName) {
+        return BuyGetQuantity.of(promotionName.getBuyQuantity(), promotionName.getGetQuantity());
     }
 
     private InputView getInputView() {
