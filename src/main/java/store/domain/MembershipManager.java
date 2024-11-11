@@ -70,7 +70,7 @@ public class MembershipManager {
         long totalPrice = ZERO;
         for (Purchase purchase : purchaseList) {
             List<Product> products = storeHouse.findProductByName(purchase.getProductName());
-            totalPrice += products.getFirst().getPrice();
+            totalPrice += products.getFirst().getPrice() * purchase.getQuantity();
         }
         if (totalPrice < discountAmount) {
             discountAmount = totalPrice;
