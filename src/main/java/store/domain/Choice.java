@@ -1,6 +1,6 @@
 package store.domain;
 
-import static store.constants.ErrorMessages.YES_OR_NO;
+import store.exception.InvalidInputException;
 
 public enum Choice {
     Y("Y"),
@@ -18,7 +18,7 @@ public enum Choice {
                 return choice;
             }
         }
-        throw new IllegalArgumentException(YES_OR_NO);
+        throw new InvalidInputException();
     }
 
     public String getValue() {

@@ -1,7 +1,5 @@
 package store.service;
 
-import static store.constants.ErrorMessages.ZERO_QUANTITY;
-
 import java.util.List;
 import java.util.Map;
 import store.domain.MembershipManager;
@@ -11,6 +9,7 @@ import store.domain.PromotionManager;
 import store.domain.StoreHouse;
 import store.dto.Purchase;
 import store.dto.Receipt;
+import store.exception.InvalidInputFormatException;
 import store.exception.OutOfStockQuantityException;
 
 public class StoreService {
@@ -39,7 +38,7 @@ public class StoreService {
 
     private void validatePurchase(Purchase purchase, StoreHouse storeHouse) {
         if (purchase.getQuantity() <= 0) {
-            throw new IllegalArgumentException(ZERO_QUANTITY);
+            throw new InvalidInputFormatException();
         }
         storeHouse.findProductByName(purchase.getProductName());
     }

@@ -1,10 +1,5 @@
 package store.io.parser;
 
-import static store.constants.ErrorMessages.EMPTY_PRODUCT;
-import static store.constants.ErrorMessages.EMPTY_PRODUCT_NAME;
-import static store.constants.ErrorMessages.INVALID_INPUT_FORMAT;
-import static store.constants.ErrorMessages.INVALID_PRODUCT_BRACKETS;
-import static store.constants.ErrorMessages.NONNUMERICAL_QUANTITY;
 import static store.constants.StringConstants.CLOSE_SQUARE_BRACKETS;
 import static store.constants.StringConstants.COMMA;
 import static store.constants.StringConstants.DASH;
@@ -14,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import store.dto.Purchase;
+import store.exception.InvalidInputFormatException;
 
 public class InputParser {
 
@@ -34,7 +30,7 @@ public class InputParser {
 
     private void validateEmptyProduct(List<String> products) {
         if (products.contains("")) {
-            throw new IllegalArgumentException(EMPTY_PRODUCT);
+            throw new InvalidInputFormatException();
         }
     }
 
@@ -51,14 +47,13 @@ public class InputParser {
 
     private void validateProductBrackets(String product) {
         if (!(product.startsWith(OPEN_SQUARE_BRACKETS) && product.endsWith(CLOSE_SQUARE_BRACKETS))) {
-            throw new IllegalArgumentException(INVALID_PRODUCT_BRACKETS);
+            throw new InvalidInputFormatException();
         }
     }
 
     private void validateHyphenSeparatedFormat(String[] parts) {
-        // TODO: 에러 메시지 구체적으로 출력되도록 보완하기
         if (parts.length != 2) {
-            throw new IllegalArgumentException(INVALID_INPUT_FORMAT);
+            throw new InvalidInputFormatException();
         }
     }
 
@@ -71,7 +66,7 @@ public class InputParser {
 
     private void validateEmptyProductName(String productName) {
         if (productName.isEmpty()) {
-            throw new IllegalArgumentException(EMPTY_PRODUCT_NAME);
+            throw new InvalidInputFormatException();
         }
     }
 
@@ -80,7 +75,7 @@ public class InputParser {
         try {
             quantity = Integer.parseInt(inputQuantity);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(NONNUMERICAL_QUANTITY);
+            throw new InvalidInputFormatException();
         }
         return quantity;
     }

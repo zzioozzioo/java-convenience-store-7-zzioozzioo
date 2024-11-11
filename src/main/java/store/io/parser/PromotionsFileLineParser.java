@@ -1,6 +1,5 @@
 package store.io.parser;
 
-import static store.constants.ErrorMessages.NONNUMERICAL_QUANTITY;
 import static store.constants.StringConstants.COMMA;
 
 import java.time.LocalDate;
@@ -10,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import store.domain.Promotion;
 import store.dto.PromotionInfo;
+import store.exception.InvalidInputFormatException;
 
 public class PromotionsFileLineParser {
 
@@ -48,7 +48,7 @@ public class PromotionsFileLineParser {
         try {
             quantity = Integer.parseInt(inputQuantity);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(NONNUMERICAL_QUANTITY);
+            throw new InvalidInputFormatException();
         }
         return quantity;
     }
