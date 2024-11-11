@@ -38,57 +38,49 @@ public class StoreController {
     }
 
     public void storeOpen() {
-        // 파일 입출력
         StoreHouse storeHouse = inputView.readProductsFileInput(PRODUCTS_FILE_NAME);
         List<PromotionInfo> promotionInfos = inputView.readPromotionsFileInput(PROMOTIONS_FILE_NAME);
 
-        // 매니저 세팅
         PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse);
         MembershipManager membershipManager = new MembershipManager(storeHouse);
         service = new StoreService(promotionManager, membershipManager);
 
-        // 상품 세팅
         List<Product> allProduct = storeHouse.getProductList();
-
-        // 판매
         processPurchase(allProduct, storeHouse, membershipManager);
     }
 
     private void processPurchase(List<Product> allProduct, StoreHouse storeHouse, MembershipManager membershipManager) {
         while (true) {
             outputView.printProductList(allProduct);
-            // 사용자 구매
-            Receipt receipt = userPurchase(storeHouse);
-
-            // 멤버십 할인 여부
+            Receipt receipt = getUserPurchase(storeHouse);
             applyMembershipDiscount(receipt);
-
-            // 영수증 출력
             outputView.printReceipt(receipt, storeHouse, membershipManager);
-
-            // 추가 구매 여부
             if (inputView.readAdditionalPurchaseChoice().equals(Choice.N)) {
                 break;
             }
         }
     }
 
-    private Receipt userPurchase(StoreHouse storeHouse) {
+    private Receipt getUserPurchase(StoreHouse storeHouse) {
         while (true) {
             List<Purchase> purchaseList = inputView.readProductNameAndQuantity();
             try {
-                Receipt receipt = service.purchase(purchaseList, storeHouse);
-                receipt.setPurchaseList(purchaseList);
-                return receipt;
+                return getReceipt(storeHouse, purchaseList);
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
+    private Receipt getReceipt(StoreHouse storeHouse, List<Purchase> purchaseList) {
+        Receipt receipt = service.purchase(purchaseList, storeHouse);
+        receipt.setPurchaseList(purchaseList);
+        return receipt;
+    }
+
     private void applyMembershipDiscount(Receipt receipt) {
         Choice membershipDiscountApplicationChoice = inputView.readMembershipDiscountApplicationChoice();
-        if (membershipDiscountApplicationChoice.equals(Choice.Y)) { // 멤버십 할인 적용
+        if (membershipDiscountApplicationChoice.equals(Choice.Y)) {
             service.applyMembershipDiscount(receipt);
         }
     }
