@@ -17,9 +17,6 @@ import store.domain.Promotion;
 
 public class ProductListParser {
 
-    // TODO: 재고가 0인 상품은 '재고 없음'으로 출력
-    // TODO: 프로모션이 없는 상품은 빈 문자열로 출력
-
     public String parse(List<Product> products) {
         StringBuilder sb = new StringBuilder();
 
@@ -60,24 +57,4 @@ public class ProductListParser {
         }
         return EMPTY_STRING;
     }
-
-    //  출력 형식
-    //- 콜라 1,000원 10개 탄산2+1
-    //- 콜라 1,000원 10개
-    //- 사이다 1,000원 8개 탄산2+1
-    //- 사이다 1,000원 7개
-    //- 오렌지주스 1,800원 9개 MD추천상품
-    //- 오렌지주스 1,800원 재고 없음
-    //- 탄산수 1,200원 5개 탄산2+1
-    //- 탄산수 1,200원 재고 없음
-    //- 물 500원 10개
-    //- 비타민워터 1,500원 6개
-    //- 감자칩 1,500원 5개 반짝할인
-    //- 감자칩 1,500원 5개
-    //- 초코바 1,200원 5개 MD추천상품
-    //- 초코바 1,200원 5개
-    //- 에너지바 2,000원 5개
-    //- 정식도시락 6,400원 8개
-    //- 컵라면 1,700원 1개 MD추천상품
-    //- 컵라면 1,700원 10개
 }

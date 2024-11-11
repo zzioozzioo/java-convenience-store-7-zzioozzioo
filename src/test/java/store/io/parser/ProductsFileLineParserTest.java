@@ -1,4 +1,4 @@
-package store.io;
+package store.io.parser;
 
 
 import static store.domain.Promotion.NULL;
@@ -7,11 +7,8 @@ import static store.domain.Promotion.SPARKLING_BUY_TWO_GET_ONE_FREE;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import store.domain.Product;
-import store.io.parser.ProductsFileLineParser;
 
 class ProductsFileLineParserTest {
-
-    // TODO: 파일에서 잘못된 형식이 존재하는 경우도 테스트에 추가하기
 
     @Test
     void 파일_한_줄에서_상품_객체_가져오기() {

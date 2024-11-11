@@ -27,7 +27,6 @@ public class PromotionsFileLineParser {
         this.line = line;
     }
 
-    // TODO: PromotionInfo 값 세팅을 여기서 해도 될지 고민해 보기 (밖으로 내보내서 해야 하나?)
     public PromotionInfo parseLine() {
         List<String> parts = Arrays.asList(line.split(COMMA));
         Promotion promotionName = getPromotion(parts);
