@@ -24,8 +24,6 @@ import store.io.writer.Writer;
 
 public class InputView {
 
-    // TODO: 검증과 형변환이 동시에 일어나는 것에 대해 고민해 보기
-
     private final Reader reader;
     private final Writer writer;
     private final InputValidator validator;
@@ -39,7 +37,7 @@ public class InputView {
     public StoreHouse readProductsFileInput(String fileName) {
         try {
             return readProductsFile(fileName);
-        } catch (IOException e) { // TODO: 어떤 exception인지 다시 체크하기
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -59,7 +57,7 @@ public class InputView {
     public List<PromotionInfo> readPromotionsFileInput(String fileName) {
         try {
             return readPromotionsFile(fileName);
-        } catch (IOException e) { // TODO: 어떤 exception인지 다시 체크하기
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

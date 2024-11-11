@@ -40,16 +40,19 @@ public class ReceiptParser {
 
     private String getFormattedPurchaseList(Receipt receipt, StoreHouse storeHouse) {
         StringBuilder sb = new StringBuilder();
+        appendFormattedPurchaseList(receipt, storeHouse, sb);
+        return sb.toString();
+    }
+
+    private static void appendFormattedPurchaseList(Receipt receipt, StoreHouse storeHouse, StringBuilder sb) {
         for (Purchase purchase : receipt.getPurchaseList()) {
             String productName = purchase.getProductName();
             int quantity = purchase.getQuantity();
             List<Product> products = storeHouse.findProductByName(productName);
             long price = products.getFirst().getPrice();
-
             sb.append(productName).append(TAP.repeat(2)).append(quantity).append(TAP)
                     .append(String.format(NUMBER_FORMAT_WITH_COMMA, price * quantity)).append(NEW_LINE);
         }
-        return sb.toString();
     }
 
     private void appendFreebieList(StringBuilder sb, Receipt receipt) {
@@ -71,8 +74,14 @@ public class ReceiptParser {
 
     private void appendAmountInfo(StringBuilder sb, Receipt receipt, StoreHouse storeHouse,
                                   MembershipManager membershipManager) {
-        sb.append(AMOUNT_INFORMATION_FORMAT)
-                .append(TOTAL_PURCHASE_AMOUNT).append(getTotalPurchaseCount(receipt)).append(TAP)
+        sb.append(AMOUNT_INFORMATION_FORMAT);
+        appendDetailedAmountInfo(sb, receipt, storeHouse, membershipManager);
+
+    }
+
+    private void appendDetailedAmountInfo(StringBuilder sb, Receipt receipt, StoreHouse storeHouse,
+                                          MembershipManager membershipManager) {
+        sb.append(TOTAL_PURCHASE_AMOUNT).append(getTotalPurchaseCount(receipt)).append(TAP)
                 .append(getTotalPurchaseAmount(receipt, storeHouse)).append(NEW_LINE)
                 .append(PROMOTION_DISCOUNT).append(StringConstants.DASH)
                 .append(getTotalPromotionDiscountAmount(receipt, storeHouse)).append(NEW_LINE)
@@ -94,7 +103,6 @@ public class ReceiptParser {
     }
 
     private String getTotalPurchaseAmount(Receipt receipt, StoreHouse storeHouse) {
-        // TODO: 스트림으로 변경 고민해 보기
         List<Purchase> purchaseList = receipt.getPurchaseList();
         long sum = ZERO;
         for (Purchase purchase : purchaseList) {
@@ -105,7 +113,6 @@ public class ReceiptParser {
     }
 
     private String getTotalPromotionDiscountAmount(Receipt receipt, StoreHouse storeHouse) {
-        // TODO: 스트림으로 변경 고민해 보기
         Map<Product, Integer> freebieProduct = receipt.getFreebieProduct();
         long sum = 0;
         for (Product product : freebieProduct.keySet()) {
@@ -116,8 +123,6 @@ public class ReceiptParser {
     }
 
     private String getTotalPrice(Receipt receipt, StoreHouse storeHouse, MembershipManager membershipManager) {
-        // TODO: 잘못 계산되는 오류 해결하기
-        //  (증정품 말고 직접 구매한 수량 * 개당 금액 - 멤버십 할인)으로 계산해야 함
         long totalPurchaseAmount = Long.parseLong(
                 getTotalPurchaseAmount(receipt, storeHouse).replace(COMMA, EMPTY_STRING));
         long totalPromotionDiscountAmount = Long.parseLong(

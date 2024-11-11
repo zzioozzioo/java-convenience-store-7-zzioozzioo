@@ -112,7 +112,6 @@ public class PromotionManager {
             addFreebieFromRegularProduct(receipt, product, purchaseQuantity);
         }
         storeHouse.buy(product, totalPurchaseQuantity);
-        // TODO: purchaseList가 null인 게 원인... 왜지???
         return totalPurchaseQuantity;
     }
 
@@ -121,10 +120,9 @@ public class PromotionManager {
         int buyQuantity = buyAndGetQuantity.getBuyQuantity();
         int getQuantity = buyAndGetQuantity.getGetQuantity();
         int remainder = purchaseQuantity % (buyQuantity + getQuantity);
-        if (purchaseQuantity == (product.getQuantity() - remainder)) { // 증정품 1개만 일반 재고 사용
+        if (purchaseQuantity == (product.getQuantity() - remainder)) {
             processRegularPricePayment(product, FREEBIE_QUANTITY);
             receipt.addFreebieProduct(product, FREEBIE_QUANTITY);
-            // TODO: purchaseList에 수량 추가해야 하는데...
         }
     }
 
@@ -134,15 +132,7 @@ public class PromotionManager {
         int getQuantity = buyAndGetQuantity.getGetQuantity();
 
         int promotionAppliedQuantity = getPromotionAppliedQuantity(product);
-
-        int regularPricePaymentQuantity = purchaseQuantity - promotionAppliedQuantity;
-        Choice regularPricePaymentChoice = getRegularPriceApplicationChoice(product,
-                regularPricePaymentQuantity);
-        if (regularPricePaymentChoice.equals(
-                Choice.Y)) {
-            Product regularProduct = findProductByPromotionName(product, Promotion.NULL);
-            storeHouse.buy(regularProduct, regularPricePaymentQuantity);
-        }
+        processRegularPricePayment(product, purchaseQuantity, promotionAppliedQuantity);
         storeHouse.buy(product, promotionAppliedQuantity);
         receipt.addFreebieProduct(product, promotionAppliedQuantity / (buyQuantity + getQuantity));
     }
@@ -154,6 +144,17 @@ public class PromotionManager {
         int count = promotionStock / bundle;
 
         return count * (buyAndGetQuantity.getBuyQuantity() + buyAndGetQuantity.getGetQuantity());
+    }
+
+    private void processRegularPricePayment(Product product, int purchaseQuantity, int promotionAppliedQuantity) {
+        int regularPricePaymentQuantity = purchaseQuantity - promotionAppliedQuantity;
+        Choice regularPricePaymentChoice = getRegularPriceApplicationChoice(product,
+                regularPricePaymentQuantity);
+        if (regularPricePaymentChoice.equals(
+                Choice.Y)) {
+            Product regularProduct = findProductByPromotionName(product, Promotion.NULL);
+            storeHouse.buy(regularProduct, regularPricePaymentQuantity);
+        }
     }
 
     private Choice getRegularPriceApplicationChoice(Product product, int purchaseQuantity) {
