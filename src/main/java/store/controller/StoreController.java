@@ -1,8 +1,5 @@
 package store.controller;
 
-import static store.constants.InputMessages.PRODUCTS_FILE_NAME;
-import static store.constants.InputMessages.PROMOTIONS_FILE_NAME;
-
 import java.util.List;
 import store.config.IoConfig;
 import store.domain.Choice;
@@ -15,6 +12,8 @@ import store.dto.PromotionInfo;
 import store.dto.Purchase;
 import store.io.InputView;
 import store.io.OutputView;
+import store.io.parser.ProductsFileLineParser;
+import store.io.parser.PromotionsFileLineParser;
 import store.service.StoreService;
 
 public class StoreController {
@@ -38,8 +37,8 @@ public class StoreController {
     }
 
     public void storeOpen() {
-        StoreHouse storeHouse = inputView.readProductsFileInput(PRODUCTS_FILE_NAME);
-        List<PromotionInfo> promotionInfos = inputView.readPromotionsFileInput(PROMOTIONS_FILE_NAME);
+        StoreHouse storeHouse = new ProductsFileLineParser().readProductsFileInput();
+        List<PromotionInfo> promotionInfos = new PromotionsFileLineParser().readPromotionsFileInput();
 
         PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse, inputView);
         MembershipManager membershipManager = new MembershipManager(storeHouse);

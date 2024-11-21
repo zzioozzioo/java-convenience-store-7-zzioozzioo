@@ -2,18 +2,38 @@ package store.io.parser;
 
 import static store.constants.StringConstants.COMMA;
 
+import java.io.IOException;
 import store.domain.Product;
 import store.domain.Promotion;
+import store.domain.StoreHouse;
+import store.io.reader.FileReader;
+import store.io.reader.Reader;
 
 public class ProductsFileLineParser {
 
-    private final String line;
+    public final static String PRODUCTS_FILE_NAME = "src/main/resources/products.md";
 
-    public ProductsFileLineParser(String line) {
-        this.line = line;
+    public StoreHouse readProductsFileInput() {
+        try {
+            return readProductsFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Product parseLine() {
+    private StoreHouse readProductsFile() throws IOException {
+        Reader reader = new FileReader(PRODUCTS_FILE_NAME);
+        reader.readLine();
+        String line;
+        StoreHouse storeHouse = new StoreHouse();
+        while ((line = reader.readLine()) != null) {
+            Product product = parseLine(line);
+            storeHouse.addProduct(product);
+        }
+        return storeHouse;
+    }
+
+    public Product parseLine(String line) {
         String[] product = line.split(COMMA);
         return getProduct(product);
     }

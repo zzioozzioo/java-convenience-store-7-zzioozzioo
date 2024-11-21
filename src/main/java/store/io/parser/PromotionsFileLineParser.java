@@ -10,24 +10,43 @@ import static store.constants.NumberConstants.START_LOCAL_DATE_TIME_INDEX;
 import static store.constants.StringConstants.COMMA;
 import static store.constants.StringConstants.DATE_TIME_FORMATTER_PATTERN;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import store.domain.Promotion;
 import store.dto.PromotionInfo;
 import store.exception.InvalidInputFormatException;
+import store.io.reader.FileReader;
+import store.io.reader.Reader;
 
 public class PromotionsFileLineParser {
 
-    private final String line;
+    public final static String PROMOTIONS_FILE_NAME = "src/main/resources/promotions.md";
 
-    public PromotionsFileLineParser(String line) {
-        this.line = line;
+    public List<PromotionInfo> readPromotionsFileInput() {
+        try {
+            return readPromotionsFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public PromotionInfo parseLine() {
+    private List<PromotionInfo> readPromotionsFile() throws IOException {
+        Reader reader = new FileReader(PROMOTIONS_FILE_NAME);
+        reader.readLine();
+        String line;
+        List<PromotionInfo> promotionInfos = new ArrayList<>();
+        while ((line = reader.readLine()) != null) {
+            promotionInfos.add(parseLine(line));
+        }
+        return promotionInfos;
+    }
+
+    public PromotionInfo parseLine(String line) {
         List<String> parts = Arrays.asList(line.split(COMMA));
         Promotion promotionName = getPromotion(parts);
         int buyQuantity = getValidQuantity(parts.get(BUY_QUANTITY_INDEX));
