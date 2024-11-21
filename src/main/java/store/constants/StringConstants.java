@@ -12,4 +12,5 @@ public class StringConstants {
     public static final String DATE_TIME_FORMATTER_PATTERN = "yyyy-MM-dd";
     public static final String NUMBER_FORMAT_WITH_COMMA = "%,d";
 
+    public static final String ORDER_ONE_PRODUCT_FORMAT = "^\\[[A-Za-z가-힣]+-\\d+\\]$";
 }

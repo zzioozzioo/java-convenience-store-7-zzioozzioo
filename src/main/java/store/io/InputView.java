@@ -7,10 +7,7 @@ import static store.constants.InputMessages.MEMBERSHIP_DISCOUNT_CHOICE_MESSAGE;
 import static store.constants.InputMessages.REGULAR_PRICE_BUY_MESSAGE;
 import static store.constants.StringConstants.NEW_LINE;
 
-import java.util.List;
 import store.domain.Choice;
-import store.dto.Purchase;
-import store.io.parser.InputParser;
 import store.io.reader.Reader;
 import store.io.writer.Writer;
 
@@ -26,13 +23,11 @@ public class InputView {
         this.validator = validator;
     }
 
-
-    public List<Purchase> readProductNameAndQuantity() {
+    public String readProductNameAndQuantity() {
         writer.write(INPUT_PRODUCT_NAME_AND_QUANTITY);
         String inputProductAndQuantity = reader.readLine();
         writer.write(NEW_LINE);
-        validator.validateEmptyInput(inputProductAndQuantity);
-        return new InputParser().parse(inputProductAndQuantity);
+        return inputProductAndQuantity;
     }
 
     public Choice readFreebieAdditionChoice(String productName) {
