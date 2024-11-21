@@ -3,7 +3,6 @@ package store.domain;
 import static store.constants.NumberConstants.SINGLE_PRODUCT_QUANTITY;
 import static store.constants.NumberConstants.ZERO;
 
-import java.util.ArrayList;
 import java.util.List;
 import store.dto.Purchase;
 import store.exception.InvalidInputFormatException;
@@ -12,8 +11,11 @@ import store.exception.ProductNotExistException;
 
 public class StoreHouse {
 
-    private final List<Product> productList = new ArrayList<>();
+    private final List<Product> productList;
 
+    public StoreHouse(List<Product> productList) {
+        this.productList = productList;
+    }
 
     public void buy(Product product, int quantity) {
         product.sell(quantity);
@@ -63,10 +65,6 @@ public class StoreHouse {
         Promotion promotionName = products.getFirst().getPromotionName();
 
         return count == SINGLE_PRODUCT_QUANTITY && promotionName.equals(Promotion.NULL);
-    }
-
-    public void addProduct(Product product) {
-        productList.add(product);
     }
 
     public List<Product> getProductList() {

@@ -3,9 +3,10 @@ package store.io.parser;
 import static store.constants.StringConstants.COMMA;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import store.domain.Product;
 import store.domain.Promotion;
-import store.domain.StoreHouse;
 import store.io.reader.FileReader;
 import store.io.reader.Reader;
 
@@ -13,7 +14,7 @@ public class ProductsFileLineParser {
 
     public final static String PRODUCTS_FILE_NAME = "src/main/resources/products.md";
 
-    public StoreHouse readProductsFileInput() {
+    public List<Product> readProductsFileInput() {
         try {
             return readProductsFile();
         } catch (IOException e) {
@@ -21,16 +22,16 @@ public class ProductsFileLineParser {
         }
     }
 
-    private StoreHouse readProductsFile() throws IOException {
+    private List<Product> readProductsFile() throws IOException {
         Reader reader = new FileReader(PRODUCTS_FILE_NAME);
         reader.readLine();
         String line;
-        StoreHouse storeHouse = new StoreHouse();
+        List<Product> productList = new ArrayList<>();
         while ((line = reader.readLine()) != null) {
             Product product = parseLine(line);
-            storeHouse.addProduct(product);
+            productList.add(product);
         }
-        return storeHouse;
+        return productList;
     }
 
     public Product parseLine(String line) {

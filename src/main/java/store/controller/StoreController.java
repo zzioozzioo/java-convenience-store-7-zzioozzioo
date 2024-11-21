@@ -37,8 +37,10 @@ public class StoreController {
     }
 
     public void storeOpen() {
-        StoreHouse storeHouse = new ProductsFileLineParser().readProductsFileInput();
+        List<Product> productList = new ProductsFileLineParser().readProductsFileInput();
         List<PromotionInfo> promotionInfos = new PromotionsFileLineParser().readPromotionsFileInput();
+
+        StoreHouse storeHouse = new StoreHouse(productList);
 
         PromotionManager promotionManager = new PromotionManager(promotionInfos, storeHouse, inputView);
         MembershipManager membershipManager = new MembershipManager(storeHouse);
