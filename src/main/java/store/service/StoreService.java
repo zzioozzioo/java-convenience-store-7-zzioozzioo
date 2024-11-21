@@ -1,7 +1,5 @@
 package store.service;
 
-import static store.constants.NumberConstants.ZERO;
-
 import java.util.List;
 import java.util.Map;
 import store.domain.MembershipManager;
@@ -11,8 +9,6 @@ import store.domain.PromotionManager;
 import store.domain.Receipt;
 import store.domain.StoreHouse;
 import store.dto.Purchase;
-import store.exception.InvalidInputFormatException;
-import store.exception.OutOfStockQuantityException;
 
 public class StoreService {
 
@@ -26,38 +22,19 @@ public class StoreService {
 
     public Receipt purchase(List<Purchase> purchaseList, StoreHouse storeHouse) {
         for (Purchase purchase : purchaseList) {
-            validatePurchase(purchase, storeHouse);
-            validateStock(storeHouse, purchase);
+            storeHouse.validatePurchase(purchase);
 
-            if (storeHouse.checkRegularPricePurchase(purchase.getProductName())) {
-                purchaseGeneralProduct(storeHouse, purchase);
+            if (storeHouse.checkRegularPricePurchase(purchase.getProductName())) { // 일반 상품만을 구매한 경우
+                purchaseGeneralProduct(purchase, storeHouse);
                 return new Receipt();
             }
-            return purchasePromotionProduct(purchase, storeHouse);
+            return purchasePromotionProduct(purchase, storeHouse); // 프로모션 상품이 포함된 경우
         }
         return new Receipt();
     }
 
-    private void validatePurchase(Purchase purchase, StoreHouse storeHouse) {
-        if (purchase.getQuantity() <= 0) {
-            throw new InvalidInputFormatException();
-        }
-        storeHouse.findProductByName(purchase.getProductName());
-    }
 
-    private static void validateStock(StoreHouse storeHouse, Purchase purchase) {
-        String productName = purchase.getProductName();
-        List<Product> products = storeHouse.findProductByName(productName);
-        int sum = ZERO;
-        for (Product product : products) {
-            sum += product.getQuantity();
-        }
-        if (sum < purchase.getQuantity()) {
-            throw new OutOfStockQuantityException();
-        }
-    }
-
-    private void purchaseGeneralProduct(StoreHouse storeHouse, Purchase purchase) {
+    private void purchaseGeneralProduct(Purchase purchase, StoreHouse storeHouse) {
         List<Product> products = storeHouse.findProductByName(purchase.getProductName());
         storeHouse.buy(products.getFirst(), purchase.getQuantity());
     }
